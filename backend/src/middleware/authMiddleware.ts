@@ -6,7 +6,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { AuthService } from '../services/authService';
 import { APIError } from './errorHandler';
-import { authLogger } from '../utils/logger';
+import { logger } from '../utils/logger';
 
 // Extend Express Request interface to include user data
 declare global {
@@ -16,8 +16,8 @@ declare global {
         id: string;
         email: string;
         username: string;
-        level: string;
-        subscriptionType: string;
+        role: 'user' | 'admin' | 'moderator';
+        subscriptionPlan: 'free' | 'premium' | 'pro';
       };
     }
   }
@@ -31,7 +31,7 @@ export const authenticateToken = (req: Request, res: Response, next: NextFunctio
   const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
 
   if (!token) {
-    authLogger.warn('Request without authentication token', {
+    logger.warn('Request without authentication token', {
       url: req.url,
       method: req.method,
       ip: req.ip
@@ -43,14 +43,14 @@ export const authenticateToken = (req: Request, res: Response, next: NextFunctio
     const userData = AuthService.verifyToken(token);
     req.user = userData;
     
-    authLogger.debug('Token authenticated successfully', {
+    logger.debug('Token authenticated successfully', {
       userId: userData.id,
       username: userData.username
     });
     
     next();
   } catch (error) {
-    authLogger.warn('Token authentication failed', {
+    logger.warn('Token authentication failed', {
       error: (error as Error).message,
       url: req.url,
       method: req.method,
@@ -75,12 +75,12 @@ export const optionalAuth = (req: Request, res: Response, next: NextFunction) =>
     const userData = AuthService.verifyToken(token);
     req.user = userData;
     
-    authLogger.debug('Optional auth successful', {
+    logger.debug('Optional auth successful', {
       userId: userData.id,
       username: userData.username
     });
   } catch (error) {
-    authLogger.debug('Optional auth failed, continuing without user', {
+    logger.debug('Optional auth failed, continuing without user', {
       error: (error as Error).message
     });
     // Continue without user data - don't throw error
@@ -100,18 +100,17 @@ export const requireSubscription = (requiredLevel: string) => {
 
     const subscriptionHierarchy = {
       'free': 0,
-      'standard': 1,
-      'professional': 2,
-      'teacher': 3
+      'premium': 1,
+      'pro': 2
     };
 
-    const userLevel = subscriptionHierarchy[req.user.subscriptionType as keyof typeof subscriptionHierarchy] || 0;
+    const userLevel = subscriptionHierarchy[req.user.subscriptionPlan as keyof typeof subscriptionHierarchy] || 0;
     const requiredLevelValue = subscriptionHierarchy[requiredLevel as keyof typeof subscriptionHierarchy] || 0;
 
     if (userLevel < requiredLevelValue) {
-      authLogger.warn('Insufficient subscription level', {
+      logger.warn('Insufficient subscription level', {
         userId: req.user.id,
-        userLevel: req.user.subscriptionType,
+        userLevel: req.user.subscriptionPlan,
         requiredLevel
       });
       return next(new APIError('Subscription upgrade required', 403));
@@ -129,12 +128,11 @@ export const requireAdmin = (req: Request, res: Response, next: NextFunction) =>
     return next(new APIError('Authentication required', 401));
   }
 
-  // For now, check if user has teacher subscription (highest level)
-  // In future, implement proper admin role system
-  if (req.user.subscriptionType !== 'teacher') {
-    authLogger.warn('Admin access attempt by non-admin user', {
+  // Check if user has admin or moderator role
+  if (req.user.role !== 'admin' && req.user.role !== 'moderator') {
+    logger.warn('Admin access attempt by non-admin user', {
       userId: req.user.id,
-      subscriptionType: req.user.subscriptionType
+      role: req.user.role
     });
     return next(new APIError('Admin privileges required', 403));
   }
@@ -167,7 +165,7 @@ export const userRateLimit = (maxRequests: number, windowMs: number) => {
     }
 
     if (userLimit.count >= maxRequests) {
-      authLogger.warn('User rate limit exceeded', {
+      logger.warn('User rate limit exceeded', {
         userId,
         count: userLimit.count,
         maxRequests

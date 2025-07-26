@@ -7,7 +7,7 @@ import Joi from 'joi';
 import { asyncHandler, APIError } from '../middleware/errorHandler';
 import { authenticateToken } from '../middleware/authMiddleware';
 import { AuthService } from '../services/authService';
-import { authLogger } from '../utils/logger';
+import { logger } from '../utils/logger';
 
 const router = Router();
 
@@ -15,10 +15,10 @@ const router = Router();
 const registerSchema = Joi.object({
   email: Joi.string().email().required(),
   username: Joi.string().min(3).max(30).alphanum().required(),
-  firstName: Joi.string().min(1).max(50).required(),
-  lastName: Joi.string().min(1).max(50).required(),
+  firstName: Joi.string().min(1).max(50).optional(),
+  lastName: Joi.string().min(1).max(50).optional(),
   password: Joi.string().min(8).max(100).required(),
-  level: Joi.string().valid('beginner', 'elementary', 'intermediate', 'upper-intermediate', 'advanced').required()
+  difficulty: Joi.string().valid('beginner', 'intermediate', 'advanced').optional()
 });
 
 const loginSchema = Joi.object({
@@ -35,8 +35,17 @@ const updateProfileSchema = Joi.object({
   firstName: Joi.string().min(1).max(50).optional(),
   lastName: Joi.string().min(1).max(50).optional(),
   username: Joi.string().min(3).max(30).alphanum().optional(),
-  level: Joi.string().valid('beginner', 'elementary', 'intermediate', 'upper-intermediate', 'advanced').optional(),
-  preferences: Joi.object().optional()
+  preferences: Joi.object().optional(),
+  profile: Joi.object().optional()
+});
+
+const passwordResetRequestSchema = Joi.object({
+  email: Joi.string().email().required()
+});
+
+const passwordResetSchema = Joi.object({
+  token: Joi.string().required(),
+  newPassword: Joi.string().min(8).max(100).required()
 });
 
 // Register endpoint
@@ -126,9 +135,43 @@ router.post('/change-password', authenticateToken, asyncHandler(async (req, res)
   });
 }));
 
+// Request password reset
+router.post('/password-reset/request', asyncHandler(async (req, res) => {
+  // Validate request data
+  const { error, value } = passwordResetRequestSchema.validate(req.body);
+  if (error) {
+    throw new APIError(`Validation error: ${error.details[0].message}`, 400);
+  }
+
+  const result = await AuthService.requestPasswordReset(value.email);
+
+  res.json({
+    success: true,
+    message: result.message,
+    // In development only - remove in production
+    ...(process.env.NODE_ENV === 'development' && result.resetToken && { resetToken: result.resetToken })
+  });
+}));
+
+// Reset password with token
+router.post('/password-reset/confirm', asyncHandler(async (req, res) => {
+  // Validate request data
+  const { error, value } = passwordResetSchema.validate(req.body);
+  if (error) {
+    throw new APIError(`Validation error: ${error.details[0].message}`, 400);
+  }
+
+  const result = await AuthService.resetPassword(value.token, value.newPassword);
+
+  res.json({
+    success: true,
+    message: result.message
+  });
+}));
+
 // Logout endpoint (client-side token removal)
 router.post('/logout', authenticateToken, asyncHandler(async (req, res) => {
-  authLogger.info('User logout', { userId: req.user!.id });
+  logger.info('User logout', { userId: req.user!.id });
   
   // Note: With JWT, logout is typically handled client-side by removing the token
   // For enhanced security, you could implement a token blacklist here

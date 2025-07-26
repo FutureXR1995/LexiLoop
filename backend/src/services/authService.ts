@@ -1,24 +1,25 @@
 /**
  * Authentication Service
  * Handles user registration, login, and token management
+ * Updated to use MongoDB with realDatabaseService
  */
 
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { PrismaClient } from '@prisma/client';
 import { config } from '../config/config';
 import { APIError } from '../middleware/errorHandler';
-import { authLogger } from '../utils/logger';
-
-const prisma = new PrismaClient();
+import { logger } from '../utils/logger';
+import { realDatabaseService } from './realDatabaseService';
+import { User, IUser } from '../models/User';
+import mongoose from 'mongoose';
 
 export interface RegisterData {
   email: string;
   username: string;
-  firstName: string;
-  lastName: string;
+  firstName?: string;
+  lastName?: string;
   password: string;
-  level: string;
+  difficulty?: 'beginner' | 'intermediate' | 'advanced';
 }
 
 export interface LoginData {
@@ -30,8 +31,8 @@ export interface UserTokenData {
   id: string;
   email: string;
   username: string;
-  level: string;
-  subscriptionType: string;
+  role: 'user' | 'admin' | 'moderator';
+  subscriptionPlan: 'free' | 'premium' | 'pro';
 }
 
 export class AuthService {
@@ -39,71 +40,89 @@ export class AuthService {
    * Register a new user
    */
   static async register(userData: RegisterData) {
-    const { email, username, firstName, lastName, password, level } = userData;
+    const { email, username, firstName, lastName, password, difficulty = 'intermediate' } = userData;
 
-    authLogger.info('User registration attempt', { email, username });
+    logger.info('User registration attempt', { email, username });
 
-    // Check if user already exists
-    const existingUser = await prisma.user.findFirst({
-      where: {
-        OR: [
-          { email: email.toLowerCase() },
-          { username: username.toLowerCase() }
-        ]
-      }
-    });
+    // Check if user already exists by email
+    const existingUserByEmail = await realDatabaseService.findOneWithCache<IUser>(
+      User,
+      { email: email.toLowerCase() }
+    );
 
-    if (existingUser) {
-      if (existingUser.email === email.toLowerCase()) {
-        throw new APIError('Email already registered', 409);
-      }
-      if (existingUser.username === username.toLowerCase()) {
-        throw new APIError('Username already taken', 409);
-      }
+    if (existingUserByEmail) {
+      throw new APIError('Email already registered', 409);
     }
 
-    // Hash password
-    const passwordHash = await bcrypt.hash(password, config.bcrypt.saltRounds);
+    // Check if username is taken
+    const existingUserByUsername = await realDatabaseService.findOneWithCache<IUser>(
+      User,
+      { username: username.toLowerCase() }
+    );
+
+    if (existingUserByUsername) {
+      throw new APIError('Username already taken', 409);
+    }
+
+    // Create user data
+    const newUserData = {
+      email: email.toLowerCase(),
+      username: username.toLowerCase(),
+      password, // Will be hashed by pre-save middleware
+      firstName: firstName || '',
+      lastName: lastName || '',
+      role: 'user' as const,
+      isActive: true,
+      emailVerified: false,
+      preferences: {
+        language: 'en',
+        difficulty,
+        dailyGoal: 10,
+        notifications: {
+          email: true,
+          push: true,
+          reminders: true
+        },
+        learningMode: 'adaptive' as const
+      },
+      subscription: {
+        plan: 'free' as const,
+        status: 'active' as const,
+        features: []
+      },
+      profile: {},
+      learningStats: {
+        totalWordsLearned: 0,
+        currentStreak: 0,
+        longestStreak: 0,
+        totalStudyTime: 0,
+        averageAccuracy: 0
+      },
+      achievements: []
+    };
 
     // Create user
-    const user = await prisma.user.create({
-      data: {
-        email: email.toLowerCase(),
-        username: username.toLowerCase(),
-        firstName,
-        lastName,
-        passwordHash,
-        level: level as any,
-        emailVerified: false, // Email verification to be implemented
-      },
-      select: {
-        id: true,
-        email: true,
-        username: true,
-        firstName: true,
-        lastName: true,
-        level: true,
-        subscriptionType: true,
-        createdAt: true,
-      }
-    });
+    const user = await realDatabaseService.create<IUser>(User, newUserData);
 
-    authLogger.info('User registered successfully', { 
-      userId: user.id, 
+    logger.info('User registered successfully', { 
+      userId: user._id, 
       email: user.email 
     });
 
     // Generate JWT token
     const token = this.generateToken({
-      id: user.id,
+      id: user._id.toString(),
       email: user.email,
       username: user.username,
-      level: user.level,
-      subscriptionType: user.subscriptionType
+      role: user.role,
+      subscriptionPlan: user.subscription.plan
     });
 
+    // Remove password from response
+    const { password: _, ...userWithoutPassword } = user.toObject();
+
     return {
-      user,
+      user: userWithoutPassword,
       token
     };
   }
@@ -114,64 +133,54 @@ export class AuthService {
   static async login(loginData: LoginData) {
     const { email, password } = loginData;
 
-    authLogger.info('User login attempt', { email });
+    logger.info('User login attempt', { email });
 
     // Find user by email
-    const user = await prisma.user.findUnique({
-      where: { email: email.toLowerCase() },
-      select: {
-        id: true,
-        email: true,
-        username: true,
-        firstName: true,
-        lastName: true,
-        passwordHash: true,
-        level: true,
-        subscriptionType: true,
-        isActive: true,
-        lastLoginAt: true,
-      }
-    });
+    const user = await realDatabaseService.findOneWithCache<IUser>(
+      User,
+      { email: email.toLowerCase() }
+    );
 
     if (!user) {
-      authLogger.warn('Login attempt with non-existent email', { email });
+      logger.warn('Login attempt with non-existent email', { email });
       throw new APIError('Invalid email or password', 401);
     }
 
     if (!user.isActive) {
-      authLogger.warn('Login attempt for inactive user', { email });
+      logger.warn('Login attempt for inactive user', { email });
       throw new APIError('Account is deactivated', 401);
     }
 
-    // Verify password
-    const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
+    // Verify password using the model method
+    const isPasswordValid = await user.comparePassword(password);
     if (!isPasswordValid) {
-      authLogger.warn('Login attempt with invalid password', { email });
+      logger.warn('Login attempt with invalid password', { email });
       throw new APIError('Invalid email or password', 401);
     }
 
     // Update last login time
-    await prisma.user.update({
-      where: { id: user.id },
-      data: { lastLoginAt: new Date() }
-    });
+    await realDatabaseService.updateOne(
+      User,
+      { _id: user._id },
+      { $set: { lastLoginAt: new Date() } }
+    );
 
-    authLogger.info('User logged in successfully', { 
-      userId: user.id, 
+    logger.info('User logged in successfully', { 
+      userId: user._id, 
       email: user.email 
     });
 
     // Generate JWT token
     const token = this.generateToken({
-      id: user.id,
+      id: user._id.toString(),
       email: user.email,
       username: user.username,
-      level: user.level,
-      subscriptionType: user.subscriptionType
+      role: user.role,
+      subscriptionPlan: user.subscription.plan
     });
 
-    // Remove password hash from response
-    const { passwordHash, ...userWithoutPassword } = user;
+    // Remove password from response
+    const { password: _, ...userWithoutPassword } = user.toObject();
 
     return {
       user: userWithoutPassword,
@@ -185,9 +194,9 @@ export class AuthService {
   static generateToken(userData: UserTokenData): string {
     return jwt.sign(
       userData,
-      config.jwt.secret,
+      process.env.JWT_SECRET || 'fallback-secret-key',
       { 
-        expiresIn: config.jwt.expiresIn,
+        expiresIn: process.env.JWT_EXPIRES_IN || '24h',
         issuer: 'lexiloop',
         audience: 'lexiloop-users'
       }
@@ -199,14 +208,14 @@ export class AuthService {
    */
   static verifyToken(token: string): UserTokenData {
     try {
-      const decoded = jwt.verify(token, config.jwt.secret, {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET || 'fallback-secret-key', {
         issuer: 'lexiloop',
         audience: 'lexiloop-users'
       }) as UserTokenData;
       
       return decoded;
     } catch (error) {
-      authLogger.warn('Token verification failed', { error: (error as Error).message });
+      logger.warn('Token verification failed', { error: (error as Error).message });
       throw new APIError('Invalid or expired token', 401);
     }
   }
@@ -215,29 +224,18 @@ export class AuthService {
    * Get user by ID
    */
   static async getUserById(userId: string) {
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: {
-        id: true,
-        email: true,
-        username: true,
-        firstName: true,
-        lastName: true,
-        level: true,
-        subscriptionType: true,
-        preferences: true,
-        isActive: true,
-        emailVerified: true,
-        createdAt: true,
-        lastLoginAt: true,
-      }
-    });
+    const user = await realDatabaseService.findOneWithCache<IUser>(
+      User,
+      { _id: new mongoose.Types.ObjectId(userId) }
+    );
 
     if (!user) {
       throw new APIError('User not found', 404);
     }
 
-    return user;
+    // Remove password from response
+    const { password: _, ...userWithoutPassword } = user.toObject();
+    return userWithoutPassword;
   }
 
   /**
@@ -247,46 +245,43 @@ export class AuthService {
     firstName?: string;
     lastName?: string;
     username?: string;
-    level?: string;
     preferences?: any;
+    profile?: any;
   }) {
-    authLogger.info('Updating user profile', { userId });
+    logger.info('Updating user profile', { userId });
 
     // Check if username is being updated and is available
     if (updateData.username) {
-      const existingUser = await prisma.user.findFirst({
-        where: {
+      const existingUser = await realDatabaseService.findOneWithCache<IUser>(
+        User,
+        { 
           username: updateData.username.toLowerCase(),
-          NOT: { id: userId }
+          _id: { $ne: new mongoose.Types.ObjectId(userId) }
         }
-      });
+      );
 
       if (existingUser) {
         throw new APIError('Username already taken', 409);
       }
     }
 
-    const updatedUser = await prisma.user.update({
-      where: { id: userId },
-      data: {
-        ...updateData,
-        username: updateData.username?.toLowerCase(),
-      },
-      select: {
-        id: true,
-        email: true,
-        username: true,
-        firstName: true,
-        lastName: true,
-        level: true,
-        subscriptionType: true,
-        preferences: true,
-        updatedAt: true,
-      }
-    });
+    const updateFields: any = {};
+    if (updateData.firstName !== undefined) updateFields.firstName = updateData.firstName;
+    if (updateData.lastName !== undefined) updateFields.lastName = updateData.lastName;
+    if (updateData.username !== undefined) updateFields.username = updateData.username.toLowerCase();
+    if (updateData.preferences !== undefined) updateFields.preferences = updateData.preferences;
+    if (updateData.profile !== undefined) updateFields.profile = updateData.profile;
 
-    authLogger.info('User profile updated successfully', { userId });
+    await realDatabaseService.updateOne(
+      User,
+      { _id: new mongoose.Types.ObjectId(userId) },
+      { $set: updateFields }
+    );
 
+    logger.info('User profile updated successfully', { userId });
+
+    // Get updated user
+    const updatedUser = await this.getUserById(userId);
     return updatedUser;
   }
 
@@ -294,36 +289,99 @@ export class AuthService {
    * Change user password
    */
   static async changePassword(userId: string, currentPassword: string, newPassword: string) {
-    authLogger.info('Password change attempt', { userId });
+    logger.info('Password change attempt', { userId });
 
-    // Get user's current password hash
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: { passwordHash: true }
-    });
+    // Get user
+    const user = await realDatabaseService.findOneWithCache<IUser>(
+      User,
+      { _id: new mongoose.Types.ObjectId(userId) }
+    );
 
     if (!user) {
       throw new APIError('User not found', 404);
     }
 
     // Verify current password
-    const isCurrentPasswordValid = await bcrypt.compare(currentPassword, user.passwordHash);
+    const isCurrentPasswordValid = await user.comparePassword(currentPassword);
     if (!isCurrentPasswordValid) {
-      authLogger.warn('Password change with invalid current password', { userId });
+      logger.warn('Password change with invalid current password', { userId });
       throw new APIError('Current password is incorrect', 401);
     }
 
-    // Hash new password
-    const newPasswordHash = await bcrypt.hash(newPassword, config.bcrypt.saltRounds);
+    // Update password (will be hashed by pre-save middleware)
+    await realDatabaseService.updateOne(
+      User,
+      { _id: new mongoose.Types.ObjectId(userId) },
+      { $set: { password: newPassword } }
+    );
 
-    // Update password
-    await prisma.user.update({
-      where: { id: userId },
-      data: { passwordHash: newPasswordHash }
-    });
-
-    authLogger.info('Password changed successfully', { userId });
+    logger.info('Password changed successfully', { userId });
 
     return { success: true };
+  }
+
+  /**
+   * Request password reset
+   */
+  static async requestPasswordReset(email: string) {
+    logger.info('Password reset requested', { email });
+
+    const user = await realDatabaseService.findOneWithCache<IUser>(
+      User,
+      { email: email.toLowerCase() }
+    );
+
+    if (!user) {
+      // Don't reveal if email exists
+      logger.warn('Password reset requested for non-existent email', { email });
+      return { success: true, message: 'If the email exists, reset instructions have been sent' };
+    }
+
+    // Generate reset token (implement email sending later)
+    const resetToken = jwt.sign(
+      { userId: user._id.toString(), purpose: 'password-reset' },
+      process.env.JWT_SECRET || 'fallback-secret-key',
+      { expiresIn: '1h' }
+    );
+
+    logger.info('Password reset token generated', { userId: user._id, email });
+
+    // TODO: Send email with reset link
+    // For now, return the token (in production, this would be sent via email)
+    return { 
+      success: true, 
+      message: 'Password reset instructions sent',
+      // Remove this in production:
+      resetToken: resetToken 
+    };
+  }
+
+  /**
+   * Reset password with token
+   */
+  static async resetPassword(token: string, newPassword: string) {
+    logger.info('Password reset attempt with token');
+
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET || 'fallback-secret-key') as any;
+      
+      if (decoded.purpose !== 'password-reset') {
+        throw new Error('Invalid token purpose');
+      }
+
+      // Update password
+      await realDatabaseService.updateOne(
+        User,
+        { _id: new mongoose.Types.ObjectId(decoded.userId) },
+        { $set: { password: newPassword } }
+      );
+
+      logger.info('Password reset successful', { userId: decoded.userId });
+
+      return { success: true, message: 'Password reset successful' };
+    } catch (error) {
+      logger.warn('Password reset failed', { error: (error as Error).message });
+      throw new APIError('Invalid or expired reset token', 401);
+    }
   }
 }

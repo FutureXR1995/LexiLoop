@@ -17,10 +17,10 @@ interface RegisterFormProps {
 interface RegisterData {
   email: string;
   username: string;
-  firstName: string;
-  lastName: string;
+  firstName?: string;
+  lastName?: string;
   password: string;
-  level: string;
+  difficulty?: 'beginner' | 'intermediate' | 'advanced';
 }
 
 export function RegisterForm({ onSubmit, isLoading = false }: RegisterFormProps) {
@@ -30,7 +30,7 @@ export function RegisterForm({ onSubmit, isLoading = false }: RegisterFormProps)
     firstName: '',
     lastName: '',
     password: '',
-    level: 'beginner'
+    difficulty: 'intermediate'
   });
   const [confirmPassword, setConfirmPassword] = useState('');
   const [errors, setErrors] = useState<Partial<RegisterData & { confirmPassword: string }>>({});
@@ -54,13 +54,7 @@ export function RegisterForm({ onSubmit, isLoading = false }: RegisterFormProps)
       newErrors.username = 'Username must be at least 3 characters';
     }
     
-    if (!formData.firstName) {
-      newErrors.firstName = 'First name is required';
-    }
-    
-    if (!formData.lastName) {
-      newErrors.lastName = 'Last name is required';
-    }
+    // First name and last name are now optional
     
     if (!formData.password) {
       newErrors.password = 'Password is required';
@@ -169,20 +163,18 @@ export function RegisterForm({ onSubmit, isLoading = false }: RegisterFormProps)
           </div>
           
           <div className="space-y-2">
-            <label htmlFor="level" className="text-sm font-medium">
-              English Level
+            <label htmlFor="difficulty" className="text-sm font-medium">
+              Learning Difficulty
             </label>
             <select
-              id="level"
-              value={formData.level}
-              onChange={(e) => handleInputChange('level', e.target.value)}
+              id="difficulty"
+              value={formData.difficulty}
+              onChange={(e) => handleInputChange('difficulty', e.target.value as 'beginner' | 'intermediate' | 'advanced')}
               className="flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
               disabled={isLoading}
             >
               <option value="beginner">Beginner</option>
-              <option value="elementary">Elementary</option>
               <option value="intermediate">Intermediate</option>
-              <option value="upper-intermediate">Upper-Intermediate</option>
               <option value="advanced">Advanced</option>
             </select>
           </div>
