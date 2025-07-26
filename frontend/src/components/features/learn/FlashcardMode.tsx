@@ -275,7 +275,7 @@ export function FlashcardMode({
                 {currentVocab.exampleSentence && (
                   <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
                     <p className="text-sm font-medium text-blue-800 mb-1">Example:</p>
-                    <p className="text-blue-700 italic">"{currentVocab.exampleSentence}"</p>
+                    <p className="text-blue-700 italic">&ldquo;{currentVocab.exampleSentence}&rdquo;</p>
                   </div>
                 )}
 

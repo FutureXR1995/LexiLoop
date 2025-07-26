@@ -291,7 +291,7 @@ export function SpeechRecognition({
 
         {/* Instructions */}
         <div className="text-center text-sm text-gray-600 space-y-1">
-          <p>Click "Start Recording" and clearly pronounce the word.</p>
+          <p>Click &ldquo;Start Recording&rdquo; and clearly pronounce the word.</p>
           <p>Make sure your microphone is enabled.</p>
         </div>
       </CardContent>

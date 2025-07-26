@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Production: standalone, Development: export
-  output: process.env.NODE_ENV === 'production' ? 'standalone' : 'export',
+  // Use standalone for production and development to enable redirects/headers
+  output: 'standalone',
   trailingSlash: true,
   
   // Image optimization
@@ -20,8 +20,8 @@ const nextConfig = {
   
   experimental: {
     turbo: {
-      loaders: {
-        '.svg': ['@svgr/webpack'],
+      rules: {
+        '*.svg': ['@svgr/webpack'],
       },
     },
   },

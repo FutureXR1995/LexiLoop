@@ -129,7 +129,7 @@ export function VoiceInteraction({
                 <h3 className="text-sm font-medium text-gray-600 uppercase tracking-wide">
                   Example
                 </h3>
-                <p className="text-gray-800 italic">"{exampleSentence}"</p>
+                <p className="text-gray-800 italic">&ldquo;{exampleSentence}&rdquo;</p>
                 <VoiceButton
                   text={exampleSentence}
                   options={{ ...voiceOptions, rate: 0.85 }}

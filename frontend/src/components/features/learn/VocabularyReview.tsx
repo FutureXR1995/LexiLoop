@@ -249,7 +249,7 @@ export function VocabularyReview({
                   {word.exampleSentence && (
                     <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
                       <p className="text-sm font-medium text-blue-800 mb-1">Example:</p>
-                      <p className="text-blue-700 italic">"{word.exampleSentence}"</p>
+                      <p className="text-blue-700 italic">&ldquo;{word.exampleSentence}&rdquo;</p>
                     </div>
                   )}
 

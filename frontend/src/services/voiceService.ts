@@ -25,30 +25,37 @@ export interface SpeechResult {
 }
 
 class VoiceService {
-  private synth: SpeechSynthesis;
-  private recognition: any; // SpeechRecognition
+  private synth: SpeechSynthesis | null = null;
+  private recognition: any = null; // SpeechRecognition
   private isListening: boolean = false;
   private voices: SpeechSynthesisVoice[] = [];
 
   constructor() {
-    this.synth = window.speechSynthesis;
-    this.initializeVoices();
-    this.initializeSpeechRecognition();
+    // Check if we're in browser environment
+    if (typeof window !== 'undefined') {
+      this.synth = window.speechSynthesis;
+      this.initializeVoices();
+      this.initializeSpeechRecognition();
+    }
   }
 
   /**
    * Initialize available voices
    */
   private initializeVoices() {
+    if (!this.synth) return;
+    
     const loadVoices = () => {
-      this.voices = this.synth.getVoices();
+      if (this.synth) {
+        this.voices = this.synth.getVoices();
+      }
     };
 
     // Load voices immediately if available
     loadVoices();
 
     // Some browsers load voices asynchronously
-    if (this.voices.length === 0) {
+    if (this.voices.length === 0 && this.synth) {
       this.synth.onvoiceschanged = loadVoices;
     }
   }
@@ -57,6 +64,8 @@ class VoiceService {
    * Initialize Speech Recognition API
    */
   private initializeSpeechRecognition() {
+    if (typeof window === 'undefined') return;
+    
     const SpeechRecognition = 
       (window as any).SpeechRecognition || 
       (window as any).webkitSpeechRecognition;
@@ -233,14 +242,14 @@ class VoiceService {
    * Check if speech synthesis is supported
    */
   isTTSSupported(): boolean {
-    return 'speechSynthesis' in window;
+    return typeof window !== 'undefined' && 'speechSynthesis' in window;
   }
 
   /**
    * Check if speech recognition is supported
    */
   isSpeechRecognitionSupported(): boolean {
-    return 'SpeechRecognition' in window || 'webkitSpeechRecognition' in window;
+    return typeof window !== 'undefined' && ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window);
   }
 
   /**
