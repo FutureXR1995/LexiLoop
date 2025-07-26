@@ -33,9 +33,13 @@ class VoiceService {
   constructor() {
     // Check if we're in browser environment
     if (typeof window !== 'undefined') {
+      console.log('VoiceService: Initializing in browser environment');
       this.synth = window.speechSynthesis;
       this.initializeVoices();
       this.initializeSpeechRecognition();
+      console.log('VoiceService: Initialization complete');
+    } else {
+      console.log('VoiceService: Server-side environment, skipping initialization');
     }
   }
 
@@ -43,11 +47,22 @@ class VoiceService {
    * Initialize available voices
    */
   private initializeVoices() {
-    if (!this.synth) return;
+    if (!this.synth) {
+      console.log('VoiceService: No speechSynthesis available');
+      return;
+    }
     
     const loadVoices = () => {
       if (this.synth) {
         this.voices = this.synth.getVoices();
+        console.log(`VoiceService: Loaded ${this.voices.length} voices`);
+        
+        if (this.voices.length > 0) {
+          console.log('VoiceService: Available voices:', 
+            this.voices.slice(0, 5).map(v => `${v.name} (${v.lang})`).join(', '),
+            this.voices.length > 5 ? `... and ${this.voices.length - 5} more` : ''
+          );
+        }
       }
     };
 
@@ -56,7 +71,11 @@ class VoiceService {
 
     // Some browsers load voices asynchronously
     if (this.voices.length === 0 && this.synth) {
-      this.synth.onvoiceschanged = loadVoices;
+      console.log('VoiceService: Voices not loaded yet, waiting for onvoiceschanged event');
+      this.synth.onvoiceschanged = () => {
+        console.log('VoiceService: onvoiceschanged event fired');
+        loadVoices();
+      };
     }
   }
 
@@ -83,12 +102,17 @@ class VoiceService {
    */
   async speak(text: string, options: TTSOptions = {}): Promise<void> {
     return new Promise((resolve, reject) => {
+      console.log('VoiceService.speak called:', { text, options });
+      
       if (!this.synth) {
-        reject(new Error('Speech synthesis not supported'));
+        const error = 'Speech synthesis not supported';
+        console.error('VoiceService:', error);
+        reject(new Error(error));
         return;
       }
 
       // Stop any ongoing speech
+      console.log('VoiceService: Canceling any existing speech');
       this.synth.cancel();
 
       const utterance = new SpeechSynthesisUtterance(text);
@@ -96,7 +120,12 @@ class VoiceService {
       // Apply options
       if (options.voice) {
         const voice = this.voices.find(v => v.name === options.voice);
-        if (voice) utterance.voice = voice;
+        if (voice) {
+          utterance.voice = voice;
+          console.log('VoiceService: Using voice:', voice.name);
+        } else {
+          console.log('VoiceService: Requested voice not found:', options.voice);
+        }
       }
       
       utterance.rate = options.rate ?? 0.9;
@@ -104,9 +133,29 @@ class VoiceService {
       utterance.volume = options.volume ?? 1;
       utterance.lang = options.lang ?? 'en-US';
 
-      utterance.onend = () => resolve();
-      utterance.onerror = (event) => reject(new Error(`Speech synthesis error: ${event.error}`));
+      console.log('VoiceService: Speech settings:', {
+        rate: utterance.rate,
+        pitch: utterance.pitch,
+        volume: utterance.volume,
+        lang: utterance.lang,
+        voice: utterance.voice?.name || 'default'
+      });
 
+      utterance.onstart = () => {
+        console.log('VoiceService: Speech started');
+      };
+
+      utterance.onend = () => {
+        console.log('VoiceService: Speech ended');
+        resolve();
+      };
+      
+      utterance.onerror = (event) => {
+        console.error('VoiceService: Speech error:', event.error);
+        reject(new Error(`Speech synthesis error: ${event.error}`));
+      };
+
+      console.log('VoiceService: Queueing speech');
       this.synth.speak(utterance);
     });
   }

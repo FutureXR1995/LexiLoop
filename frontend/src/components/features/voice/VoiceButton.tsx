@@ -34,16 +34,26 @@ export function VoiceButton({
   onError
 }: VoiceButtonProps) {
   const [isPlaying, setIsPlaying] = useState(false);
-  const [isSupported, setIsSupported] = useState(voiceService.isTTSSupported());
+  const [isSupported, setIsSupported] = useState(false);
+
+  // Check TTS support on client side only
+  React.useEffect(() => {
+    setIsSupported(voiceService.isTTSSupported());
+  }, []);
 
   const handleClick = async () => {
+    console.log('VoiceButton clicked:', { text, isSupported, isPlaying });
+    
     if (!isSupported) {
-      if (onError) onError('Text-to-speech is not supported in this browser');
+      const errorMsg = 'Text-to-speech is not supported in this browser';
+      console.error(errorMsg);
+      if (onError) onError(errorMsg);
       return;
     }
 
     if (isPlaying) {
       // Stop current speech
+      console.log('Stopping current speech');
       voiceService.stopSpeaking();
       setIsPlaying(false);
       if (onSpeakEnd) onSpeakEnd();
@@ -51,21 +61,25 @@ export function VoiceButton({
     }
 
     try {
+      console.log('Starting speech with options:', { text, options });
       setIsPlaying(true);
       if (onSpeakStart) onSpeakStart();
 
       await voiceService.speak(text, {
         rate: 0.9,
+        volume: 1.0,
+        pitch: 1.0,
         ...options
       });
 
+      console.log('Speech completed successfully');
       setIsPlaying(false);
       if (onSpeakEnd) onSpeakEnd();
     } catch (error) {
+      console.error('Voice playback error:', error);
       setIsPlaying(false);
       const errorMessage = error instanceof Error ? error.message : 'Speech failed';
       if (onError) onError(errorMessage);
-      console.error('Voice playback error:', error);
     }
   };
 
