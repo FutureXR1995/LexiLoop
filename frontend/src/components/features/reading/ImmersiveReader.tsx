@@ -9,6 +9,7 @@ import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { VocabularyPopover } from './VocabularyPopover';
 import { ReadingControls } from './ReadingControls';
 import { ReadingProgress } from './ReadingProgress';
+import { voiceService } from '@/services/voiceService';
 
 interface VocabularyWord {
   id: string;
@@ -131,6 +132,79 @@ export function ImmersiveReader({
     setReaderSettings(prev => ({ ...prev, ...newSettings }));
   }, []);
 
+  // TTS Control Functions
+  const speakSentence = useCallback(async (sentenceIndex: number) => {
+    if (sentenceIndex >= sentences.length) {
+      setIsPlaying(false);
+      return;
+    }
+
+    const sentence = sentences[sentenceIndex].trim();
+    if (!sentence) {
+      // Skip empty sentences
+      setTimeout(() => speakSentence(sentenceIndex + 1), 100);
+      return;
+    }
+
+    try {
+      setCurrentSentence(sentenceIndex);
+      
+      await voiceService.speak(sentence, {
+        rate: 0.8,
+        pitch: 1.0,
+        volume: 1.0
+      });
+
+      // Auto-advance to next sentence if still playing
+      if (isPlaying && sentenceIndex < sentences.length - 1) {
+        setTimeout(() => speakSentence(sentenceIndex + 1), 300);
+      } else {
+        setIsPlaying(false);
+        setCurrentSentence(-1);
+      }
+    } catch (error) {
+      console.error('Error speaking sentence:', error);
+      setIsPlaying(false);
+      setCurrentSentence(-1);
+    }
+  }, [sentences, isPlaying]);
+
+  const handlePlayPause = useCallback(async () => {
+    if (isPlaying) {
+      // Stop current speech
+      voiceService.stopSpeaking();
+      setIsPlaying(false);
+    } else {
+      // Start reading from current sentence
+      if (currentSentence >= 0 && currentSentence < sentences.length) {
+        try {
+          setIsPlaying(true);
+          await speakSentence(currentSentence);
+        } catch (error) {
+          console.error('TTS playback error:', error);
+          setIsPlaying(false);
+        }
+      }
+    }
+  }, [isPlaying, currentSentence, sentences, speakSentence]);
+
+  const handleSentenceChange = useCallback((newSentence: number) => {
+    setCurrentSentence(newSentence);
+    
+    // If currently playing, restart from new sentence
+    if (isPlaying) {
+      voiceService.stopSpeaking();
+      setTimeout(() => speakSentence(newSentence), 100);
+    }
+  }, [isPlaying, speakSentence]);
+
+  // Cleanup TTS on unmount
+  useEffect(() => {
+    return () => {
+      voiceService.stopSpeaking();
+    };
+  }, []);
+
   // Render highlighted text
   const renderHighlightedText = useCallback((text: string, sentenceIndex?: number) => {
     const words = text.split(/(\s+)/);
@@ -217,10 +291,10 @@ export function ImmersiveReader({
         settings={readerSettings}
         onSettingsChange={updateSettings}
         isPlaying={isPlaying}
-        onPlayPause={() => setIsPlaying(!isPlaying)}
+        onPlayPause={handlePlayPause}
         currentSentence={currentSentence}
         totalSentences={sentences.length}
-        onSentenceChange={setCurrentSentence}
+        onSentenceChange={handleSentenceChange}
         theme={readerSettings.theme}
       />
 

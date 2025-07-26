@@ -103,32 +103,33 @@ export function ReadingControls({
       fixed top-0 left-0 right-0 z-40 border-b backdrop-blur-sm bg-opacity-95
       ${getThemeClasses()}
     `}>
-      <div className="max-w-6xl mx-auto px-4 py-3">
+      <div className="max-w-6xl mx-auto px-2 sm:px-4 py-2 sm:py-3">
         <div className="flex items-center justify-between">
-          {/* Left Section - Navigation */}
-          <div className="flex items-center gap-3">
+          {/* Left Section - Navigation (Responsive) */}
+          <div className="flex items-center gap-1 sm:gap-3">
             <button
               onClick={() => window.history.back()}
-              className={getButtonClasses()}
+              className={`${getButtonClasses()} text-xs sm:text-sm px-2 sm:px-3`}
             >
-              ← Back
+              <span className="hidden sm:inline">← Back</span>
+              <span className="sm:hidden">←</span>
             </button>
             
-            <div className="h-6 w-px bg-gray-300 mx-2" />
+            <div className="h-4 sm:h-6 w-px bg-gray-300 mx-1 sm:mx-2" />
             
-            {/* TTS Controls */}
-            <div className="flex items-center gap-2">
+            {/* TTS Controls (Mobile Optimized) */}
+            <div className="flex items-center gap-1 sm:gap-2">
               <button
                 onClick={handlePreviousSentence}
                 disabled={currentSentence <= 0}
-                className={`${getButtonClasses()} disabled:opacity-50 disabled:cursor-not-allowed`}
+                className={`${getButtonClasses()} disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base px-2 sm:px-3 py-1 sm:py-2`}
               >
                 ⏮
               </button>
               
               <button
                 onClick={onPlayPause}
-                className={getButtonClasses(isPlaying)}
+                className={`${getButtonClasses(isPlaying)} text-sm sm:text-base px-2 sm:px-3 py-1 sm:py-2`}
               >
                 {isPlaying ? '⏸' : '▶️'}
               </button>
@@ -136,95 +137,121 @@ export function ReadingControls({
               <button
                 onClick={handleNextSentence}
                 disabled={currentSentence >= totalSentences - 1}
-                className={`${getButtonClasses()} disabled:opacity-50 disabled:cursor-not-allowed`}
+                className={`${getButtonClasses()} disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base px-2 sm:px-3 py-1 sm:py-2`}
               >
                 ⏭
               </button>
               
-              <span className="text-xs opacity-75 ml-2">
+              <span className="text-xs opacity-75 ml-1 sm:ml-2 hidden sm:inline">
                 {currentSentence + 1} / {totalSentences}
               </span>
             </div>
           </div>
 
-          {/* Center Section - Reading Mode */}
-          <div className="flex items-center gap-2">
+          {/* Center Section - Reading Mode (Hidden on mobile) */}
+          <div className="hidden md:flex items-center gap-1 lg:gap-2">
             <button
               onClick={() => onSettingsChange({ readingMode: 'normal' })}
-              className={getButtonClasses(settings.readingMode === 'normal')}
+              className={`${getButtonClasses(settings.readingMode === 'normal')} text-xs lg:text-sm px-2 lg:px-3`}
             >
               Normal
             </button>
             <button
               onClick={() => onSettingsChange({ readingMode: 'focus' })}
-              className={getButtonClasses(settings.readingMode === 'focus')}
+              className={`${getButtonClasses(settings.readingMode === 'focus')} text-xs lg:text-sm px-2 lg:px-3`}
             >
               Focus
             </button>
             <button
               onClick={() => onSettingsChange({ readingMode: 'zen' })}
-              className={getButtonClasses(settings.readingMode === 'zen')}
+              className={`${getButtonClasses(settings.readingMode === 'zen')} text-xs lg:text-sm px-2 lg:px-3`}
             >
               Zen
             </button>
           </div>
 
-          {/* Right Section - Settings */}
-          <div className="flex items-center gap-2">
-            {/* Quick Theme Toggle */}
+          {/* Right Section - Settings (Mobile Optimized) */}
+          <div className="flex items-center gap-1 sm:gap-2">
+            {/* Quick Theme Toggle (Compact on mobile) */}
             <div className="flex items-center gap-1">
               <button
                 onClick={() => onSettingsChange({ theme: 'light' })}
-                className={`w-8 h-8 rounded-full bg-white border-2 ${
+                className={`w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-white border-2 ${
                   settings.theme === 'light' ? 'border-blue-500' : 'border-gray-300'
                 }`}
               />
               <button
                 onClick={() => onSettingsChange({ theme: 'sepia' })}
-                className={`w-8 h-8 rounded-full bg-amber-100 border-2 ${
+                className={`w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-amber-100 border-2 ${
                   settings.theme === 'sepia' ? 'border-blue-500' : 'border-gray-300'
                 }`}
               />
               <button
                 onClick={() => onSettingsChange({ theme: 'dark' })}
-                className={`w-8 h-8 rounded-full bg-gray-800 border-2 ${
+                className={`w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-gray-800 border-2 ${
                   settings.theme === 'dark' ? 'border-blue-500' : 'border-gray-300'
                 }`}
               />
             </div>
 
-            <div className="h-6 w-px bg-gray-300 mx-2" />
+            <div className="h-4 sm:h-6 w-px bg-gray-300 mx-1 sm:mx-2" />
 
             {/* Settings Toggle */}
             <button
               onClick={() => setShowSettings(!showSettings)}
-              className={getButtonClasses(showSettings)}
+              className={`${getButtonClasses(showSettings)} text-xs sm:text-sm px-2 sm:px-3`}
             >
-              ⚙️ Settings
+              <span className="hidden sm:inline">⚙️ Settings</span>
+              <span className="sm:hidden">⚙️</span>
             </button>
 
-            {/* Fullscreen Toggle */}
+            {/* Fullscreen Toggle (Hidden on mobile) */}
             <button
               onClick={handleFullscreen}
-              className={getButtonClasses(isFullscreen)}
+              className={`${getButtonClasses(isFullscreen)} hidden sm:inline-flex text-xs sm:text-sm px-2 sm:px-3`}
             >
               {isFullscreen ? '⤨' : '⛶'}
             </button>
           </div>
         </div>
 
-        {/* Settings Panel */}
+        {/* Enhanced Settings Panel (Mobile Responsive) */}
         {showSettings && (
           <div className={`
-            mt-4 p-4 rounded-lg border
+            mt-3 sm:mt-4 p-3 sm:p-4 rounded-lg border mx-2 sm:mx-0
             ${theme === 'dark' ? 'bg-gray-700 border-gray-600' : 
               theme === 'sepia' ? 'bg-amber-50 border-amber-200' :
               'bg-gray-50 border-gray-200'}
           `}>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {/* Mobile Reading Mode Selection (Only visible on mobile) */}
+            <div className="md:hidden mb-4">
+              <label className="block text-sm font-medium mb-2">Reading Mode</label>
+              <div className="grid grid-cols-3 gap-2">
+                <button
+                  onClick={() => onSettingsChange({ readingMode: 'normal' })}
+                  className={`${getButtonClasses(settings.readingMode === 'normal')} text-xs px-2 py-1`}
+                >
+                  Normal
+                </button>
+                <button
+                  onClick={() => onSettingsChange({ readingMode: 'focus' })}
+                  className={`${getButtonClasses(settings.readingMode === 'focus')} text-xs px-2 py-1`}
+                >
+                  Focus
+                </button>
+                <button
+                  onClick={() => onSettingsChange({ readingMode: 'zen' })}
+                  className={`${getButtonClasses(settings.readingMode === 'zen')} text-xs px-2 py-1`}
+                >
+                  Zen
+                </button>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
               {/* Font Size */}
               <div>
-                <label className="block text-sm font-medium mb-2">
+                <label className="block text-xs sm:text-sm font-medium mb-2">
                   Font Size: {settings.fontSize}px
                 </label>
                 <input
@@ -239,7 +266,7 @@ export function ReadingControls({
 
               {/* Line Height */}
               <div>
-                <label className="block text-sm font-medium mb-2">
+                <label className="block text-xs sm:text-sm font-medium mb-2">
                   Line Height: {settings.lineHeight}
                 </label>
                 <input
@@ -255,14 +282,14 @@ export function ReadingControls({
 
               {/* Font Family */}
               <div>
-                <label className="block text-sm font-medium mb-2">
+                <label className="block text-xs sm:text-sm font-medium mb-2">
                   Font Family
                 </label>
                 <select
                   value={settings.fontFamily}
                   onChange={(e) => onSettingsChange({ fontFamily: e.target.value })}
                   className={`
-                    w-full px-2 py-1 rounded border text-sm
+                    w-full px-2 py-1 rounded border text-xs sm:text-sm
                     ${theme === 'dark' ? 'bg-gray-800 border-gray-600 text-white' :
                       'bg-white border-gray-300 text-gray-900'}
                   `}
@@ -284,7 +311,7 @@ export function ReadingControls({
                     onChange={(e) => onSettingsChange({ autoHighlight: e.target.checked })}
                     className="rounded"
                   />
-                  <span className="text-sm">Auto Highlight</span>
+                  <span className="text-xs sm:text-sm">Auto Highlight</span>
                 </label>
                 
                 <label className="flex items-center gap-2">
@@ -294,9 +321,16 @@ export function ReadingControls({
                     onChange={(e) => onSettingsChange({ showDefinitions: e.target.checked })}
                     className="rounded"
                   />
-                  <span className="text-sm">Show Definitions</span>
+                  <span className="text-xs sm:text-sm">Show Definitions</span>
                 </label>
               </div>
+            </div>
+
+            {/* Current sentence counter for mobile */}
+            <div className="sm:hidden mt-3 pt-3 border-t border-gray-200 text-center">
+              <span className="text-xs text-gray-600">
+                Sentence: {currentSentence + 1} / {totalSentences}
+              </span>
             </div>
           </div>
         )}
