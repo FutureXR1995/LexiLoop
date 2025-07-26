@@ -9,6 +9,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
+import { VoiceButton, SpeechRecognitionButton } from '@/components/features/voice';
 
 interface Question {
   id: string;
@@ -76,7 +77,7 @@ export function TestComponent({ storyId, vocabularyIds, onComplete }: TestCompon
             id: `q${currentLayer}_${index}`,
             type: 'typing',
             vocabularyId: vocabId,
-            question: 'Type the word: "adventure"',
+            question: 'Listen and type the word you hear:',
             correctAnswer: 'adventure'
           });
         } else if (currentLayer === 3) {
@@ -204,7 +205,17 @@ export function TestComponent({ storyId, vocabularyIds, onComplete }: TestCompon
       {/* Question Card */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">{currentQuestion.question}</CardTitle>
+          <CardTitle className="text-lg flex items-center justify-between">
+            <span>{currentQuestion.question}</span>
+            {/* Voice pronunciation for word meaning and typing questions */}
+            {(currentQuestion.type === 'word_meaning' || currentQuestion.type === 'typing') && (
+              <VoiceButton
+                text={currentQuestion.correctAnswer}
+                size="sm"
+                variant="ghost"
+              />
+            )}
+          </CardTitle>
         </CardHeader>
         
         <CardContent className="space-y-4">
@@ -232,17 +243,48 @@ export function TestComponent({ storyId, vocabularyIds, onComplete }: TestCompon
 
           {/* Text Input Questions */}
           {!currentQuestion.options && (
-            <div>
-              <Input
-                value={userAnswer}
-                onChange={(e) => setUserAnswer(e.target.value)}
-                placeholder="Type your answer here..."
-                className="text-lg p-4"
-                onKeyDown={(e) => e.key === 'Enter' && userAnswer.trim() && handleAnswer()}
-                autoFocus
-              />
-              <p className="text-sm text-gray-500 mt-2">
-                Press Enter or click Submit when you&apos;re ready
+            <div className="space-y-4">
+              {/* Audio playback for typing questions */}
+              {currentQuestion.type === 'typing' && (
+                <div className="text-center p-6 bg-blue-50 border border-blue-200 rounded-lg">
+                  <p className="text-sm text-blue-700 mb-3">Click to hear the word:</p>
+                  <VoiceButton
+                    text={currentQuestion.correctAnswer}
+                    size="lg"
+                    variant="default"
+                  />
+                </div>
+              )}
+              
+              <div className="flex space-x-2">
+                <Input
+                  value={userAnswer}
+                  onChange={(e) => setUserAnswer(e.target.value)}
+                  placeholder="Type your answer here..."
+                  className="text-lg p-4 flex-1"
+                  onKeyDown={(e) => e.key === 'Enter' && userAnswer.trim() && handleAnswer()}
+                  autoFocus
+                />
+                
+                {/* Speech recognition button for typing questions */}
+                {currentQuestion.type === 'typing' && (
+                  <SpeechRecognitionButton
+                    targetWord={currentQuestion.correctAnswer}
+                    onResult={(accuracy, transcript) => {
+                      if (accuracy >= 0.7) {
+                        setUserAnswer(transcript);
+                      }
+                    }}
+                    size="lg"
+                  />
+                )}
+              </div>
+              
+              <p className="text-sm text-gray-500">
+                {currentQuestion.type === 'typing' 
+                  ? 'Type the word you hear, or use the microphone button for speech recognition'
+                  : 'Press Enter or click Submit when you\'re ready'
+                }
               </p>
             </div>
           )}
