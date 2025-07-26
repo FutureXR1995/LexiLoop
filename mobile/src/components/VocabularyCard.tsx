@@ -20,6 +20,7 @@ import * as Animatable from 'react-native-animatable';
 import { mobileVoiceService, VoiceRecognitionResult } from '../services/MobileVoiceService';
 import { offlineLearningService, OfflineVocabulary } from '../services/OfflineLearningService';
 import { theme } from '../utils/theme';
+import { useTranslation } from '../hooks/useTranslation';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -40,6 +41,7 @@ export const VocabularyCard: React.FC<VocabularyCardProps> = ({
   showAnswer = false,
   style,
 }) => {
+  const { t } = useTranslation();
   const [isRevealed, setIsRevealed] = useState(showAnswer);
   const [isListening, setIsListening] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
@@ -150,7 +152,7 @@ export const VocabularyCard: React.FC<VocabularyCardProps> = ({
               </Text>
             </View>
             <View style={styles.progressContainer}>
-              <Text style={styles.progressText}>Mastery: {vocabulary.masteryLevel}%</Text>
+              <Text style={styles.progressText}>{t('learning.mastery')}: {vocabulary.masteryLevel}%</Text>
               <ProgressBar
                 progress={getMasteryProgress()}
                 color={theme.colors.primary}
@@ -188,7 +190,7 @@ export const VocabularyCard: React.FC<VocabularyCardProps> = ({
                       size={32}
                       color={theme.colors.primary}
                     />
-                    <Text style={styles.voiceButtonText}>Listen</Text>
+                    <Text style={styles.voiceButtonText}>{t('voice.listen')}</Text>
                   </TouchableOpacity>
 
                   <TouchableOpacity
@@ -201,7 +203,7 @@ export const VocabularyCard: React.FC<VocabularyCardProps> = ({
                       size={32}
                       color={theme.colors.secondary}
                     />
-                    <Text style={styles.voiceButtonText}>Practice</Text>
+                    <Text style={styles.voiceButtonText}>{t('voice.practice')}</Text>
                   </TouchableOpacity>
                 </View>
 
@@ -219,10 +221,10 @@ export const VocabularyCard: React.FC<VocabularyCardProps> = ({
                     ]}
                   >
                     <Text style={styles.pronunciationScore}>
-                      Accuracy: {Math.round(pronunciationResult.accuracy * 100)}%
+                      {t('learning.accuracy')}: {Math.round(pronunciationResult.accuracy * 100)}%
                     </Text>
                     <Text style={styles.pronunciationTranscript}>
-                      You said: "{pronunciationResult.transcript}"
+                      {t('voice.youSaid')}: "{pronunciationResult.transcript}"
                     </Text>
                   </Animatable.View>
                 )}
@@ -233,7 +235,7 @@ export const VocabularyCard: React.FC<VocabularyCardProps> = ({
                   style={styles.revealButton}
                   contentStyle={styles.revealButtonContent}
                 >
-                  Show Definition
+{t('learning.definition')}
                 </Button>
               </View>
             ) : (
@@ -243,7 +245,7 @@ export const VocabularyCard: React.FC<VocabularyCardProps> = ({
                 
                 {vocabulary.exampleSentence && (
                   <View style={styles.exampleContainer}>
-                    <Text style={styles.exampleLabel}>Example:</Text>
+                    <Text style={styles.exampleLabel}>{t('learning.example')}:</Text>
                     <Text style={styles.exampleSentence}>"{vocabulary.exampleSentence}"</Text>
                   </View>
                 )}
@@ -262,7 +264,7 @@ export const VocabularyCard: React.FC<VocabularyCardProps> = ({
                     onPress={() => handleMasteryFeedback(false)}
                   >
                     <Icon name="thumb-down" size={24} color="#fff" />
-                    <Text style={styles.masteryButtonText}>Difficult</Text>
+                    <Text style={styles.masteryButtonText}>{t('learning.difficulty')}</Text>
                   </TouchableOpacity>
 
                   <TouchableOpacity
@@ -270,7 +272,7 @@ export const VocabularyCard: React.FC<VocabularyCardProps> = ({
                     onPress={() => handleMasteryFeedback(true)}
                   >
                     <Icon name="thumb-up" size={24} color="#fff" />
-                    <Text style={styles.masteryButtonText}>Easy</Text>
+                    <Text style={styles.masteryButtonText}>{t('common.ok')}</Text>
                   </TouchableOpacity>
                 </View>
               </View>

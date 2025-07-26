@@ -16,13 +16,27 @@ import { AuthProvider } from './store/AuthContext';
 import { ThemeProvider } from './store/ThemeContext';
 import { ApiProvider } from './store/ApiContext';
 import { NotificationService } from './services/NotificationService';
+import { performanceOptimizer } from './utils/PerformanceOptimizer';
+import { useMemoryWarning } from './hooks/useMemoryWarning';
 import { theme } from './utils/theme';
 
 const App: React.FC = () => {
+  const { isLowMemory, performCleanup, addCleanupTask } = useMemoryWarning();
+
   useEffect(() => {
     // Initialize app services
     initializeApp();
-  }, []);
+
+    // Add performance cleanup tasks
+    addCleanupTask(() => {
+      console.log('Running app-level cleanup');
+    });
+
+    // Cleanup on unmount
+    return () => {
+      performanceOptimizer.destroy();
+    };
+  }, [addCleanupTask]);
 
   const initializeApp = async () => {
     // Lock orientation to portrait for better UX
@@ -41,15 +55,20 @@ const App: React.FC = () => {
 
     // Set up background sync
     // BackgroundSync.initialize();
+
+    // Start performance monitoring
+    performanceOptimizer.startRenderMeasurement();
   };
 
   const handleAppStateChange = (nextAppState: string) => {
     if (nextAppState === 'active') {
       // App has come to foreground - sync data if needed
       console.log('App is active - syncing data');
+      performanceOptimizer.endRenderMeasurement('App');
     } else if (nextAppState === 'background') {
-      // App has gone to background - save state
+      // App has gone to background - save state and cleanup
       console.log('App is in background - saving state');
+      performCleanup();
     }
   };
 
