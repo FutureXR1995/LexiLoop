@@ -4,11 +4,12 @@
  */
 
 import React, { useEffect } from 'react';
-import { StatusBar, Platform, PermissionsAndroid } from 'react-native';
+import { StatusBar, Platform, PermissionsAndroid, AppState } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Provider as PaperProvider, DefaultTheme } from 'react-native-paper';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import Orientation from 'react-native-orientation-locker';
 
 import AppNavigator from './navigation/AppNavigator';
 import { AuthProvider } from './store/AuthContext';
@@ -24,6 +25,9 @@ const App: React.FC = () => {
   }, []);
 
   const initializeApp = async () => {
+    // Lock orientation to portrait for better UX
+    Orientation.lockToPortrait();
+
     // Request permissions
     if (Platform.OS === 'android') {
       await requestAndroidPermissions();
@@ -32,8 +36,21 @@ const App: React.FC = () => {
     // Initialize notifications
     NotificationService.initialize();
 
+    // Set up app state change listener
+    AppState.addEventListener('change', handleAppStateChange);
+
     // Set up background sync
     // BackgroundSync.initialize();
+  };
+
+  const handleAppStateChange = (nextAppState: string) => {
+    if (nextAppState === 'active') {
+      // App has come to foreground - sync data if needed
+      console.log('App is active - syncing data');
+    } else if (nextAppState === 'background') {
+      // App has gone to background - save state
+      console.log('App is in background - saving state');
+    }
   };
 
   const requestAndroidPermissions = async () => {

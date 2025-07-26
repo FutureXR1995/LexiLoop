@@ -4,8 +4,8 @@
 
 export const theme = {
   colors: {
-    primary: '#3B82F6',
-    secondary: '#8B5CF6',
+    primary: '#6366F1',
+    secondary: '#F59E0B',
     success: '#10B981',
     warning: '#F59E0B',
     error: '#EF4444',
@@ -14,6 +14,10 @@ export const theme = {
     background: '#F8FAFC',
     surface: '#FFFFFF',
     card: '#FFFFFF',
+    onBackground: '#1E293B',
+    onSurface: '#334155',
+    outline: '#E2E8F0',
+    disabled: '#94A3B8',
     
     text: {
       primary: '#1F2937',
