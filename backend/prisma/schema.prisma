@@ -1,0 +1,382 @@
+// Prisma schema for LexiLoop
+// This is the main schema file for the Prisma ORM
+
+generator client {
+  provider = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                   String    @id @default(uuid()) @db.Uuid
+  email                String    @unique
+  passwordHash         String    @map("password_hash")
+  username             String
+  firstName            String?   @map("first_name")
+  lastName             String?   @map("last_name")
+  level                String    @default("beginner")
+  preferences          Json      @default("{}")
+  isActive             Boolean   @default(true) @map("is_active")
+  emailVerified        Boolean   @default(false) @map("email_verified")
+  subscriptionType     String    @default("free") @map("subscription_type")
+  subscriptionExpiresAt DateTime? @map("subscription_expires_at")
+  createdAt            DateTime  @default(now()) @map("created_at")
+  updatedAt            DateTime  @updatedAt @map("updated_at")
+  lastLoginAt          DateTime? @map("last_login_at")
+
+  // Relations
+  learningSessions     LearningSession[]
+  testResults          TestResult[]
+  userProgress         UserProgress[]
+  errorLogs            ErrorLog[]
+  userAchievements     UserAchievement[]
+  systemLogs           SystemLog[]
+  aiUsageLogs          AiUsageLog[]
+  createdWordBooks     WordBook[]        @relation("CreatedWordBooks")
+  
+  // Social features relations
+  sentFriendRequests   UserRelationship[] @relation("UserSentRequests")
+  receivedFriendRequests UserRelationship[] @relation("UserReceivedRequests")
+  createdGroups        StudyGroup[]       @relation("GroupCreator")
+  groupMemberships     StudyGroupMember[]
+  userStats            UserStats?
+  activityLogs         UserActivity[]
+
+  @@map("users")
+}
+
+model Vocabulary {
+  id               String   @id @default(uuid()) @db.Uuid
+  word             String
+  definition       String
+  pronunciation    String?
+  partOfSpeech     String?  @map("part_of_speech")
+  difficultyLevel  Int      @map("difficulty_level")
+  frequencyRank    Int?     @map("frequency_rank")
+  category         String?
+  tags             String[]
+  exampleSentences String[] @map("example_sentences")
+  synonyms         String[]
+  antonyms         String[]
+  etymology        String?
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  wordBookContents WordBookContent[]
+  testResults      TestResult[]
+  userProgress     UserProgress[]
+  errorLogs        ErrorLog[]
+
+  @@map("vocabularies")
+}
+
+model WordBook {
+  id              String    @id @default(uuid()) @db.Uuid
+  name            String
+  description     String?
+  category        String?
+  difficultyLevel Int?      @map("difficulty_level")
+  isPublic        Boolean   @default(true) @map("is_public")
+  createdBy       String?   @map("created_by") @db.Uuid
+  wordCount       Int       @default(0) @map("word_count")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  creator          User?               @relation("CreatedWordBooks", fields: [createdBy], references: [id])
+  wordBookContents WordBookContent[]
+  learningSessions LearningSession[]
+
+  @@map("word_books")
+}
+
+model WordBookContent {
+  id           String   @id @default(uuid()) @db.Uuid
+  wordBookId   String   @map("word_book_id") @db.Uuid
+  vocabularyId String   @map("vocabulary_id") @db.Uuid
+  orderIndex   Int?     @map("order_index")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  // Relations
+  wordBook   WordBook   @relation(fields: [wordBookId], references: [id], onDelete: Cascade)
+  vocabulary Vocabulary @relation(fields: [vocabularyId], references: [id], onDelete: Cascade)
+
+  @@unique([wordBookId, vocabularyId])
+  @@map("word_book_contents")
+}
+
+model Story {
+  id              String   @id @default(uuid()) @db.Uuid
+  content         String
+  title           String?
+  vocabularyIds   String[] @map("vocabulary_ids") @db.Uuid
+  difficultyLevel Int      @map("difficulty_level")
+  storyType       String   @default("general") @map("story_type")
+  wordCount       Int      @map("word_count")
+  qualityScore    Decimal? @map("quality_score") @db.Decimal(3, 2)
+  audioUrl        String?  @map("audio_url")
+  cacheKey        String?  @unique @map("cache_key")
+  metadata        Json     @default("{}")
+  isPublic        Boolean  @default(false) @map("is_public")
+  viewCount       Int      @default(0) @map("view_count")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  learningSessions LearningSession[]
+
+  @@map("stories")
+}
+
+model LearningSession {
+  id               String    @id @default(uuid()) @db.Uuid
+  userId           String    @map("user_id") @db.Uuid
+  storyId          String    @map("story_id") @db.Uuid
+  wordBookId       String?   @map("word_book_id") @db.Uuid
+  vocabularyIds    String[]  @map("vocabulary_ids") @db.Uuid
+  sessionType      String    @default("story_learning") @map("session_type")
+  startedAt        DateTime  @default(now()) @map("started_at")
+  completedAt      DateTime? @map("completed_at")
+  totalTimeSeconds Int?      @map("total_time_seconds")
+  status           String    @default("active")
+  metadata         Json      @default("{}")
+
+  // Relations
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  story        Story        @relation(fields: [storyId], references: [id], onDelete: Cascade)
+  wordBook     WordBook?    @relation(fields: [wordBookId], references: [id])
+  testResults  TestResult[]
+
+  @@map("learning_sessions")
+}
+
+model TestResult {
+  id                 String   @id @default(uuid()) @db.Uuid
+  learningSessionId  String   @map("learning_session_id") @db.Uuid
+  userId             String   @map("user_id") @db.Uuid
+  testType           String   @map("test_type")
+  vocabularyId       String   @map("vocabulary_id") @db.Uuid
+  question           String
+  userAnswer         String?  @map("user_answer")
+  correctAnswer      String   @map("correct_answer")
+  isCorrect          Boolean  @map("is_correct")
+  responseTimeMs     Int?     @map("response_time_ms")
+  attempts           Int      @default(1)
+  hintsUsed          Int      @default(0) @map("hints_used")
+  createdAt          DateTime @default(now()) @map("created_at")
+
+  // Relations
+  learningSession LearningSession @relation(fields: [learningSessionId], references: [id], onDelete: Cascade)
+  user            User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  vocabulary      Vocabulary      @relation(fields: [vocabularyId], references: [id], onDelete: Cascade)
+  errorLogs       ErrorLog[]
+
+  @@map("test_results")
+}
+
+model UserProgress {
+  id                    String    @id @default(uuid()) @db.Uuid
+  userId                String    @map("user_id") @db.Uuid
+  vocabularyId          String    @map("vocabulary_id") @db.Uuid
+  masteryLevel          Int       @default(0) @map("mastery_level")
+  correctCount          Int       @default(0) @map("correct_count")
+  incorrectCount        Int       @default(0) @map("incorrect_count")
+  totalAttempts         Int       @default(0) @map("total_attempts")
+  streak                Int       @default(0)
+  bestStreak            Int       @default(0) @map("best_streak")
+  firstLearnedAt        DateTime? @map("first_learned_at")
+  lastReviewedAt        DateTime? @map("last_reviewed_at")
+  nextReviewAt          DateTime? @map("next_review_at")
+  reviewIntervalHours   Int       @default(24) @map("review_interval_hours")
+  confidenceScore       Decimal   @default(0.0) @map("confidence_score") @db.Decimal(3, 2)
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  vocabulary Vocabulary @relation(fields: [vocabularyId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, vocabularyId])
+  @@map("user_progress")
+}
+
+model ErrorLog {
+  id           String    @id @default(uuid()) @db.Uuid
+  userId       String    @map("user_id") @db.Uuid
+  vocabularyId String    @map("vocabulary_id") @db.Uuid
+  testResultId String    @map("test_result_id") @db.Uuid
+  errorType    String    @map("error_type")
+  errorContext String?   @map("error_context")
+  resolvedAt   DateTime? @map("resolved_at")
+  createdAt    DateTime  @default(now()) @map("created_at")
+
+  // Relations
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  vocabulary Vocabulary @relation(fields: [vocabularyId], references: [id], onDelete: Cascade)
+  testResult TestResult @relation(fields: [testResultId], references: [id], onDelete: Cascade)
+
+  @@map("error_logs")
+}
+
+model UserAchievement {
+  id            String   @id @default(uuid()) @db.Uuid
+  userId        String   @map("user_id") @db.Uuid
+  achievementId String   @map("achievement_id") @db.Uuid
+  earnedAt      DateTime @default(now()) @map("earned_at")
+  progress      Json     @default("{}")
+  metadata      Json     @default("{}")
+
+  // Relations
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  achievement Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, achievementId])
+  @@map("user_achievements")
+}
+
+model SystemLog {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String?  @map("user_id") @db.Uuid
+  action    String
+  resource  String?
+  metadata  Json     @default("{}")
+  ipAddress String?  @map("ip_address")
+  userAgent String?  @map("user_agent")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  user User? @relation(fields: [userId], references: [id])
+
+  @@map("system_logs")
+}
+
+model AiUsageLog {
+  id             String   @id @default(uuid()) @db.Uuid
+  userId         String?  @map("user_id") @db.Uuid
+  serviceType    String   @map("service_type")
+  tokensUsed     Int?     @map("tokens_used")
+  costUsd        Decimal? @map("cost_usd") @db.Decimal(10, 4)
+  requestDetails Json     @default("{}") @map("request_details")
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  // Relations
+  user User? @relation(fields: [userId], references: [id])
+
+  @@map("ai_usage_logs")
+}
+
+// Social Features Models
+
+model UserRelationship {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  friendId  String   @map("friend_id") @db.Uuid
+  status    String   @default("pending") // pending, accepted, blocked
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  user   User @relation("UserSentRequests", fields: [userId], references: [id], onDelete: Cascade)
+  friend User @relation("UserReceivedRequests", fields: [friendId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, friendId])
+  @@map("user_relationships")
+}
+
+model StudyGroup {
+  id          String   @id @default(uuid()) @db.Uuid
+  name        String
+  description String?
+  isPublic    Boolean  @default(true) @map("is_public")
+  maxMembers  Int      @default(50) @map("max_members")
+  createdBy   String   @map("created_by") @db.Uuid
+  avatarUrl   String?  @map("avatar_url")
+  metadata    Json     @default("{}")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  creator User               @relation("GroupCreator", fields: [createdBy], references: [id], onDelete: Cascade)
+  members StudyGroupMember[]
+
+  @@map("study_groups")
+}
+
+model StudyGroupMember {
+  id        String   @id @default(uuid()) @db.Uuid
+  groupId   String   @map("group_id") @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  role      String   @default("member") // member, admin, moderator
+  joinedAt  DateTime @default(now()) @map("joined_at")
+  isActive  Boolean  @default(true) @map("is_active")
+
+  // Relations
+  group StudyGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user  User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([groupId, userId])
+  @@map("study_group_members")
+}
+
+model UserStats {
+  id                    String   @id @default(uuid()) @db.Uuid
+  userId                String   @unique @map("user_id") @db.Uuid
+  totalWordsLearned     Int      @default(0) @map("total_words_learned")
+  totalStudyTimeMinutes Int      @default(0) @map("total_study_time_minutes")
+  currentStreak         Int      @default(0) @map("current_streak")
+  longestStreak         Int      @default(0) @map("longest_streak")
+  totalPoints           Int      @default(0) @map("total_points")
+  level                 Int      @default(1)
+  experiencePoints      Int      @default(0) @map("experience_points")
+  weeklyGoal            Int      @default(50) @map("weekly_goal")
+  averageAccuracy       Decimal  @default(0.0) @map("average_accuracy") @db.Decimal(5, 4)
+  lastActiveDate        DateTime @default(now()) @map("last_active_date")
+  createdAt             DateTime @default(now()) @map("created_at")
+  updatedAt             DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_stats")
+}
+
+model Achievement {
+  id          String @id @default(uuid()) @db.Uuid
+  name        String @unique
+  title       String
+  description String
+  category    String // learning, social, streak, mastery, milestone
+  icon        String
+  color       String @default("#3B82F6")
+  rarity      String @default("common") // common, rare, epic, legendary
+  criteria    Json   // Criteria for earning this achievement
+  rewards     Json   // Points, badges, etc.
+  isActive    Boolean @default(true) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  // Relations
+  userAchievements UserAchievement[]
+
+  @@map("achievements")
+}
+
+model UserActivity {
+  id           String   @id @default(uuid()) @db.Uuid
+  userId       String   @map("user_id") @db.Uuid
+  activityType String   @map("activity_type") // learned_word, completed_session, earned_achievement, etc.
+  description  String
+  points       Int      @default(0)
+  metadata     Json     @default("{}")
+  isPublic     Boolean  @default(true) @map("is_public")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_activities")
+}

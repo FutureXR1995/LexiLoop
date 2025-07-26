@@ -1,0 +1,75 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: lexiloop-postgres
+    environment:
+      POSTGRES_USER: lexiloop
+      POSTGRES_PASSWORD: lexiloop_password
+      POSTGRES_DB: lexiloop
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/init:/docker-entrypoint-initdb.d
+    networks:
+      - lexiloop
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: lexiloop-redis
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    networks:
+      - lexiloop
+
+  # Backend API
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: lexiloop-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://lexiloop:lexiloop_password@postgres:5432/lexiloop
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - postgres
+      - redis
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    networks:
+      - lexiloop
+
+  # AI Service
+  ai-service:
+    build:
+      context: ./ai-service
+      dockerfile: Dockerfile
+    container_name: lexiloop-ai
+    ports:
+      - "8001:8001"
+    environment:
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - redis
+    volumes:
+      - ./ai-service:/app
+    networks:
+      - lexiloop
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  lexiloop:
+    driver: bridge

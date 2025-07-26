@@ -1,0 +1,301 @@
+/**
+ * Learning Page
+ * Main interface for vocabulary learning with AI-generated stories
+ */
+
+'use client';
+
+import { useState } from 'react';
+import Link from 'next/link';
+
+interface VocabularyWord {
+  id: string;
+  word: string;
+  definition: string;
+  selected: boolean;
+}
+
+interface GeneratedStory {
+  content: string;
+  wordCount: number;
+  qualityScore: number;
+  vocabularyUsed: string[];
+}
+
+export default function LearnPage() {
+  const [selectedWords, setSelectedWords] = useState<VocabularyWord[]>([]);
+  const [difficulty, setDifficulty] = useState(2);
+  const [storyType, setStoryType] = useState('general');
+  const [generatedStory, setGeneratedStory] = useState<GeneratedStory | null>(null);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // Sample vocabulary words for demonstration
+  const sampleWords: VocabularyWord[] = [
+    { id: '1', word: 'adventure', definition: 'An exciting or remarkable experience', selected: false },
+    { id: '2', word: 'mysterious', definition: 'Full of mystery; difficult to understand', selected: false },
+    { id: '3', word: 'explore', definition: 'To travel through an area to learn about it', selected: false },
+    { id: '4', word: 'discover', definition: 'To find something for the first time', selected: false },
+    { id: '5', word: 'fascinating', definition: 'Extremely interesting and captivating', selected: false },
+  ];
+
+  const handleWordToggle = (wordId: string) => {
+    setSelectedWords(prev => 
+      prev.map(word => 
+        word.id === wordId 
+          ? { ...word, selected: !word.selected }
+          : word
+      )
+    );
+  };
+
+  const handleGenerateStory = async () => {
+    const selected = selectedWords.filter(word => word.selected);
+    
+    if (selected.length === 0) {
+      setError('Please select at least one vocabulary word');
+      return;
+    }
+
+    setIsGenerating(true);
+    setError(null);
+
+    try {
+      // Mock API call - in real implementation, this would call the backend
+      await new Promise(resolve => setTimeout(resolve, 2000)); // Simulate API delay
+      
+      // Mock response
+      const mockStory: GeneratedStory = {
+        content: `Once upon a time, there was a young student who loved to embark on exciting adventures. The world seemed mysterious and full of secrets waiting to be discovered. Every day, she would explore new places and discover fascinating things about the world around her. This adventure taught her that learning new words opens up incredible opportunities to explore and understand the fascinating world we live in.`,
+        wordCount: 65,
+        qualityScore: 0.85,
+        vocabularyUsed: selected.map(w => w.word)
+      };
+
+      setGeneratedStory(mockStory);
+    } catch (err) {
+      setError('Failed to generate story. Please try again.');
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  // Initialize selected words on first render
+  useState(() => {
+    setSelectedWords(sampleWords);
+  });
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <header className="bg-white shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center py-4">
+            <Link href="/" className="text-2xl font-bold text-indigo-600">
+              LexiLoop
+            </Link>
+            <nav className="flex space-x-4">
+              <Link href="/progress" className="text-gray-600 hover:text-indigo-600">
+                Progress
+              </Link>
+              <Link href="/word-books" className="text-gray-600 hover:text-indigo-600">
+                Word Books
+              </Link>
+            </nav>
+          </div>
+        </div>
+      </header>
+
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Left Panel - Word Selection */}
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">
+              📚 Choose Your Vocabulary
+            </h2>
+
+            {/* Difficulty Selector */}
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Difficulty Level
+              </label>
+              <select
+                value={difficulty}
+                onChange={(e) => setDifficulty(parseInt(e.target.value))}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              >
+                <option value={1}>Beginner</option>
+                <option value={2}>Elementary</option>
+                <option value={3}>Intermediate</option>
+                <option value={4}>Upper-Intermediate</option>
+                <option value={5}>Advanced</option>
+              </select>
+            </div>
+
+            {/* Story Type Selector */}
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Story Type
+              </label>
+              <select
+                value={storyType}
+                onChange={(e) => setStoryType(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              >
+                <option value="general">General</option>
+                <option value="adventure">Adventure</option>
+                <option value="daily_life">Daily Life</option>
+                <option value="science">Science</option>
+                <option value="history">History</option>
+              </select>
+            </div>
+
+            {/* Word Selection */}
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Select Words ({selectedWords.filter(w => w.selected).length}/20)
+              </label>
+              <div className="space-y-2 max-h-60 overflow-y-auto">
+                {selectedWords.map((word) => (
+                  <div
+                    key={word.id}
+                    className={`p-3 border rounded-lg cursor-pointer transition-colors ${
+                      word.selected
+                        ? 'border-indigo-500 bg-indigo-50'
+                        : 'border-gray-300 hover:border-indigo-300'
+                    }`}
+                    onClick={() => handleWordToggle(word.id)}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <span className="font-medium text-gray-900">
+                          {word.word}
+                        </span>
+                        <p className="text-sm text-gray-600 mt-1">
+                          {word.definition}
+                        </p>
+                      </div>
+                      <input
+                        type="checkbox"
+                        checked={word.selected}
+                        onChange={() => handleWordToggle(word.id)}
+                        className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Generate Button */}
+            <button
+              onClick={handleGenerateStory}
+              disabled={isGenerating || selectedWords.filter(w => w.selected).length === 0}
+              className={`w-full py-3 px-4 rounded-md font-medium ${
+                isGenerating || selectedWords.filter(w => w.selected).length === 0
+                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  : 'bg-indigo-600 text-white hover:bg-indigo-700'
+              }`}
+            >
+              {isGenerating ? '🤖 Generating Story...' : '✨ Generate AI Story'}
+            </button>
+
+            {error && (
+              <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-md">
+                <p className="text-sm text-red-700">{error}</p>
+              </div>
+            )}
+          </div>
+
+          {/* Right Panel - Generated Story */}
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">
+              📖 Your AI-Generated Story
+            </h2>
+
+            {!generatedStory && !isGenerating && (
+              <div className="text-center py-12 text-gray-500">
+                <div className="text-6xl mb-4">📚</div>
+                <p className="text-lg">Select vocabulary words and click &ldquo;Generate AI Story&rdquo; to begin!</p>
+              </div>
+            )}
+
+            {isGenerating && (
+              <div className="text-center py-12">
+                <div className="animate-spin text-6xl mb-4">🤖</div>
+                <p className="text-lg text-gray-600">Creating your personalized story...</p>
+                <div className="mt-4 bg-gray-200 rounded-full h-2">
+                  <div className="bg-indigo-600 h-2 rounded-full animate-pulse" style={{width: '60%'}}></div>
+                </div>
+              </div>
+            )}
+
+            {generatedStory && (
+              <div>
+                {/* Story Stats */}
+                <div className="mb-4 p-3 bg-indigo-50 rounded-lg">
+                  <div className="flex justify-between text-sm">
+                    <span>📝 Words: {generatedStory.wordCount}</span>
+                    <span>⭐ Quality: {(generatedStory.qualityScore * 100).toFixed(0)}%</span>
+                    <span>🎯 Used: {generatedStory.vocabularyUsed.length} words</span>
+                  </div>
+                </div>
+
+                {/* Story Content */}
+                <div className="prose max-w-none">
+                  <div className="text-gray-800 leading-relaxed text-lg">
+                    {generatedStory.content.split(' ').map((word, index) => {
+                      const cleanWord = word.replace(/[.,!?;]/g, '').toLowerCase();
+                      const isVocabWord = generatedStory.vocabularyUsed.some(
+                        vocabWord => vocabWord.toLowerCase() === cleanWord
+                      );
+                      
+                      return isVocabWord ? (
+                        <span
+                          key={index}
+                          className="bg-yellow-200 px-1 rounded cursor-pointer hover:bg-yellow-300"
+                          title={`Vocabulary word: ${cleanWord}`}
+                        >
+                          {word}
+                        </span>
+                      ) : (
+                        <span key={index}>{word}</span>
+                      );
+                    }).reduce((prev: any, curr: any, index: number) => index === 0 ? [curr] : [...prev, ' ', curr], [])}
+                  </div>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="mt-6 flex space-x-3">
+                  <button className="flex-1 bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700">
+                    🎧 Listen to Audio
+                  </button>
+                  <button className="flex-1 bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700">
+                    🧠 Start Test
+                  </button>
+                </div>
+
+                {/* Vocabulary Used */}
+                <div className="mt-4">
+                  <h4 className="text-sm font-medium text-gray-700 mb-2">
+                    Vocabulary Words Used:
+                  </h4>
+                  <div className="flex flex-wrap gap-2">
+                    {generatedStory.vocabularyUsed.map((word, index) => (
+                      <span
+                        key={index}
+                        className="px-3 py-1 bg-indigo-100 text-indigo-800 rounded-full text-sm"
+                      >
+                        {word}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
