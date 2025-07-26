@@ -267,12 +267,21 @@ export default function LearnPage() {
 
                 {/* Action Buttons */}
                 <div className="mt-6 flex space-x-3">
+                  <Link 
+                    href="/reading"
+                    className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 text-center"
+                  >
+                    📖 Immersive Reading
+                  </Link>
                   <button className="flex-1 bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700">
                     🎧 Listen to Audio
                   </button>
-                  <button className="flex-1 bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700">
+                  <Link
+                    href="/test"
+                    className="flex-1 bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700 text-center"
+                  >
                     🧠 Start Test
-                  </button>
+                  </Link>
                 </div>
 
                 {/* Vocabulary Used */}

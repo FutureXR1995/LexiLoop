@@ -77,12 +77,12 @@ export default function Home() {
             {/* Feature 1 */}
             <div className="bg-white rounded-lg shadow-md p-6">
               <div className="text-center">
-                <div className="text-3xl mb-4">🧠</div>
+                <div className="text-3xl mb-4">📖</div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  AI-Generated Stories
+                  Immersive Reading
                 </h3>
                 <p className="text-gray-600">
-                  Every story is unique and crafted to naturally include your target vocabulary words
+                  Enhanced reading experience with interactive vocabulary highlighting and TTS support
                 </p>
               </div>
             </div>
