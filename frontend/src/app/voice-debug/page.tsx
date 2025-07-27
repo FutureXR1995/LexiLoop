@@ -94,7 +94,31 @@ export default function VoiceDebugPage() {
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4">
       <div className="max-w-2xl mx-auto">
-        <h1 className="text-3xl font-bold text-center mb-8">🔧 Voice Debug</h1>
+        <h1 className="text-3xl font-bold text-center mb-4">🔧 Voice Debug</h1>
+        
+        {/* Navigation Links */}
+        <div className="text-center mb-8">
+          <div className="inline-flex gap-3">
+            <a
+              href="/azure-speech-test"
+              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+            >
+              🎤 Azure Speech
+            </a>
+            <a
+              href="/claude-ai-test"
+              className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
+            >
+              🤖 Claude AI
+            </a>
+            <button
+              onClick={() => window.history.back()}
+              className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors"
+            >
+              ← Back
+            </button>
+          </div>
+        </div>
         
         {/* Support Information */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">

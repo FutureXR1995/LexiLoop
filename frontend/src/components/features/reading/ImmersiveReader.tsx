@@ -9,7 +9,7 @@ import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { VocabularyPopover } from './VocabularyPopover';
 import { ReadingControls } from './ReadingControls';
 import { ReadingProgress } from './ReadingProgress';
-import { voiceService } from '@/services/voiceService';
+import azureSpeechService from '@/services/azureSpeechService';
 
 interface VocabularyWord {
   id: string;
@@ -132,7 +132,7 @@ export function ImmersiveReader({
     setReaderSettings(prev => ({ ...prev, ...newSettings }));
   }, []);
 
-  // TTS Control Functions
+  // TTS Control Functions with Azure Speech Services
   const speakSentence = useCallback(async (sentenceIndex: number) => {
     if (sentenceIndex >= sentences.length) {
       setIsPlaying(false);
@@ -149,11 +149,17 @@ export function ImmersiveReader({
     try {
       setCurrentSentence(sentenceIndex);
       
-      await voiceService.speak(sentence, {
-        rate: 0.8,
-        pitch: 1.0,
-        volume: 1.0
+      // Use Azure Speech Services for TTS
+      const success = await azureSpeechService.speakText(sentence, {
+        rate: '0.8',
+        pitch: '0%',
+        volume: '100',
+        voice: 'en-US-AriaNeural'
       });
+
+      if (!success) {
+        console.warn('Azure TTS failed, sentence:', sentence);
+      }
 
       // Auto-advance to next sentence if still playing
       if (isPlaying && sentenceIndex < sentences.length - 1) {
@@ -163,7 +169,7 @@ export function ImmersiveReader({
         setCurrentSentence(-1);
       }
     } catch (error) {
-      console.error('Error speaking sentence:', error);
+      console.error('Error speaking sentence with Azure TTS:', error);
       setIsPlaying(false);
       setCurrentSentence(-1);
     }
@@ -171,19 +177,19 @@ export function ImmersiveReader({
 
   const handlePlayPause = useCallback(async () => {
     if (isPlaying) {
-      // Stop current speech
-      voiceService.stopSpeaking();
+      // Stop current speech with Azure TTS
+      azureSpeechService.stopSpeaking();
       setIsPlaying(false);
     } else {
-      // Start reading from current sentence
-      if (currentSentence >= 0 && currentSentence < sentences.length) {
-        try {
-          setIsPlaying(true);
-          await speakSentence(currentSentence);
-        } catch (error) {
-          console.error('TTS playback error:', error);
-          setIsPlaying(false);
-        }
+      // Start reading from current sentence (default to 0 if none selected)
+      const startSentence = currentSentence >= 0 ? currentSentence : 0;
+      try {
+        setIsPlaying(true);
+        setCurrentSentence(startSentence);
+        await speakSentence(startSentence);
+      } catch (error) {
+        console.error('Azure TTS playback error:', error);
+        setIsPlaying(false);
       }
     }
   }, [isPlaying, currentSentence, sentences, speakSentence]);
@@ -193,15 +199,16 @@ export function ImmersiveReader({
     
     // If currently playing, restart from new sentence
     if (isPlaying) {
-      voiceService.stopSpeaking();
+      azureSpeechService.stopSpeaking();
       setTimeout(() => speakSentence(newSentence), 100);
     }
   }, [isPlaying, speakSentence]);
 
-  // Cleanup TTS on unmount
+  // Cleanup Azure TTS on unmount
   useEffect(() => {
     return () => {
-      voiceService.stopSpeaking();
+      azureSpeechService.stopSpeaking();
+      azureSpeechService.dispose();
     };
   }, []);
 
