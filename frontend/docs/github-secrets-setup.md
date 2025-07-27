@@ -26,12 +26,12 @@ Value: https://lexiloop-japan.azurestaticapps.net
 ### AI 和语音服务
 ```
 Name: CLAUDE_API_KEY
-Value: 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
+Value: [您的Claude API密钥]
 ```
 
 ```
 Name: AZURE_SPEECH_KEY
-Value: ee9dKLY1XRCaGagb2pM8gBKOCXpbRHja6paIVBdbEIXq8bcOvGbrJQQJ99BGACYeBjFXJ3w3AAAYACOGiAEC
+Value: [您的Azure Speech API密钥]
 ```
 
 ```
