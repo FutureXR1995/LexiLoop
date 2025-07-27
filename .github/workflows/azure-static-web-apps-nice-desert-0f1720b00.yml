@@ -36,15 +36,24 @@ jobs:
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
         with:
-          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_NICE_DESERT_0F1720B00 }}
-          action: "upload"
-          ###### Repository/Build Configurations - These values can be configured to match your app requirements. ######
-          # For more information regarding Static Web App workflow configurations, please visit: https://aka.ms/swaworkflowconfig
-          app_location: "./frontend" # App source code path
-          api_location: "" # Api source code path - optional
-          output_location: "build" # Built app content directory - optional
-          github_id_token: ${{ steps.idtoken.outputs.result }}
-          ###### End of Repository/Build Configurations ######
+         azure_static_web_apps_api_token: ${{secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_NICE_DESERT_0F1720B00 }}
+         repo_token: ${{ secrets.GITHUB_TOKEN }}
+         action: "upload"
+         app_location: "/frontend"
+         output_location: "out"
+        env:
+            DATABASE_URL: ${{ secrets.DATABASE_URL }}
+            NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
+            NEXTAUTH_URL: ${{ secrets.NEXTAUTH_URL }}
+            CLAUDE_API_KEY: ${{ secrets.CLAUDE_API_KEY }}
+            AZURE_SPEECH_KEY: ${{ secrets.AZURE_SPEECH_KEY }}
+            AZURE_SPEECH_REGION: ${{ secrets.AZURE_SPEECH_REGION }}
+            NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL }}
+            NEXT_PUBLIC_DEFAULT_LOCALE: ${{ secrets.NEXT_PUBLIC_DEFAULT_LOCALE }}
+            AZURE_KEYVAULT_URI: ${{ secrets.AZURE_KEYVAULT_URI }}
+            AZURE_CDN_PROFILE: ${{ secrets.AZURE_CDN_PROFILE }}
+            AZURE_CDN_RESOURCE_GROUP: ${{ secrets.AZURE_CDN_RESOURCE_GROUP }}
+
 
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
@@ -55,4 +64,5 @@ jobs:
         id: closepullrequest
         uses: Azure/static-web-apps-deploy@v1
         with:
+          azure_static_web_apps_api_token: ${{secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_NICE_DESERT_0F1720B00 }}
           action: "close"
