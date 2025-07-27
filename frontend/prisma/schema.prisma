@@ -1,0 +1,325 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User model for authentication and profile
+model User {
+  id                String              @id @default(cuid())
+  email             String              @unique
+  username          String?             @unique
+  name              String?
+  avatar            String?
+  hashedPassword    String
+  emailVerified     DateTime?
+  isActive          Boolean             @default(true)
+  
+  // Profile settings
+  preferredLanguage String              @default("en")
+  timezone          String              @default("UTC")
+  learningLevel     LearningLevel       @default(BEGINNER)
+  
+  // Relationships
+  vocabularyCollections VocabularyCollection[]
+  userWords            UserWord[]
+  stories              Story[]
+  testSessions         TestSession[]
+  learningProgress     LearningProgress[]
+  errorReviews         ErrorReview[]
+  achievements         Achievement[]
+  
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  
+  @@map("users")
+}
+
+// Vocabulary collections (word books)
+model VocabularyCollection {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  category    String?
+  level       LearningLevel @default(BEGINNER)
+  isPublic    Boolean  @default(false)
+  coverImage  String?
+  
+  // Owner
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Words in this collection
+  words       Word[]
+  
+  // Statistics
+  wordCount   Int      @default(0)
+  studyCount  Int      @default(0)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("vocabulary_collections")
+}
+
+// Individual words in collections
+model Word {
+  id             String   @id @default(cuid())
+  word           String
+  definition     String
+  pronunciation  String?
+  partOfSpeech   String?
+  difficulty     LearningLevel @default(BEGINNER)
+  examples       String[] // Array of example sentences
+  
+  // Collection relationship
+  collectionId   String
+  collection     VocabularyCollection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  
+  // User progress with this word
+  userWords      UserWord[]
+  testQuestions  TestQuestion[]
+  errorReviews   ErrorReview[]
+  
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  
+  @@unique([word, collectionId])
+  @@map("words")
+}
+
+// User's individual word learning progress
+model UserWord {
+  id           String       @id @default(cuid())
+  
+  // Relationships
+  userId       String
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  wordId       String
+  word         Word         @relation(fields: [wordId], references: [id], onDelete: Cascade)
+  
+  // Learning progress
+  masteryLevel MasteryLevel @default(NEW)
+  correctCount Int          @default(0)
+  incorrectCount Int        @default(0)
+  lastReviewed DateTime?
+  nextReview   DateTime?
+  
+  // Spaced repetition algorithm data
+  easinessFactor Float       @default(2.5)
+  interval       Int         @default(1)
+  repetition     Int         @default(0)
+  
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  
+  @@unique([userId, wordId])
+  @@map("user_words")
+}
+
+// AI-generated stories
+model Story {
+  id            String      @id @default(cuid())
+  title         String
+  content       String
+  difficulty    LearningLevel @default(BEGINNER)
+  wordCount     Int
+  readingTime   Int         // in minutes
+  
+  // Generation metadata
+  prompt        String?
+  vocabularyWords String[]  // Words that were specifically included
+  
+  // Owner (if user-generated)
+  userId        String?
+  user          User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
+  
+  // Usage statistics
+  readCount     Int         @default(0)
+  likeCount     Int         @default(0)
+  
+  // Test sessions based on this story
+  testSessions  TestSession[]
+  
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  
+  @@map("stories")
+}
+
+// Test sessions for vocabulary assessment
+model TestSession {
+  id            String       @id @default(cuid())
+  type          TestType     @default(VOCABULARY)
+  difficulty    LearningLevel @default(BEGINNER)
+  totalQuestions Int
+  
+  // Relationships
+  userId        String
+  user          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  storyId       String?
+  story         Story?       @relation(fields: [storyId], references: [id], onDelete: SetNull)
+  
+  // Results
+  score         Float?       // Percentage score
+  correctAnswers Int         @default(0)
+  timeSpent     Int?         // in seconds
+  isCompleted   Boolean      @default(false)
+  
+  // Questions in this test
+  questions     TestQuestion[]
+  
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  
+  @@map("test_sessions")
+}
+
+// Individual test questions
+model TestQuestion {
+  id              String      @id @default(cuid())
+  type            QuestionType @default(MULTIPLE_CHOICE)
+  question        String
+  options         String[]    // For multiple choice
+  correctAnswer   String
+  explanation     String?
+  
+  // Relationships
+  testSessionId   String
+  testSession     TestSession @relation(fields: [testSessionId], references: [id], onDelete: Cascade)
+  wordId          String?
+  word            Word?       @relation(fields: [wordId], references: [id], onDelete: SetNull)
+  
+  // User response
+  userAnswer      String?
+  isCorrect       Boolean?
+  timeSpent       Int?        // in seconds
+  
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  
+  @@map("test_questions")
+}
+
+// Learning progress tracking
+model LearningProgress {
+  id                String      @id @default(cuid())
+  
+  // User relationship
+  userId            String
+  user              User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Daily progress metrics
+  date              DateTime    @db.Date
+  wordsStudied      Int         @default(0)
+  wordsLearned      Int         @default(0)
+  testsTaken        Int         @default(0)
+  averageScore      Float?
+  timeSpent         Int         @default(0) // in minutes
+  streakCount       Int         @default(0)
+  
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+  
+  @@unique([userId, date])
+  @@map("learning_progress")
+}
+
+// Error review system for wrong answers
+model ErrorReview {
+  id              String       @id @default(cuid())
+  
+  // Relationships
+  userId          String
+  user            User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  wordId          String
+  word            Word         @relation(fields: [wordId], references: [id], onDelete: Cascade)
+  
+  // Error details
+  questionType    QuestionType
+  userAnswer      String
+  correctAnswer   String
+  errorReason     String?
+  
+  // Review status
+  isReviewed      Boolean      @default(false)
+  isMastered      Boolean      @default(false)
+  reviewCount     Int          @default(0)
+  lastReviewed    DateTime?
+  
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  
+  @@map("error_reviews")
+}
+
+// Achievement system
+model Achievement {
+  id            String            @id @default(cuid())
+  
+  // User relationship
+  userId        String
+  user          User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Achievement details
+  type          AchievementType
+  title         String
+  description   String
+  icon          String?
+  category      String?
+  
+  // Progress
+  currentProgress Int            @default(0)
+  targetProgress  Int
+  isCompleted     Boolean        @default(false)
+  completedAt     DateTime?
+  
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+  
+  @@map("achievements")
+}
+
+// Enums
+enum LearningLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
+enum MasteryLevel {
+  NEW
+  LEARNING
+  FAMILIAR
+  MASTERED
+}
+
+enum TestType {
+  VOCABULARY
+  COMPREHENSION
+  PRONUNCIATION
+  MIXED
+}
+
+enum QuestionType {
+  MULTIPLE_CHOICE
+  FILL_BLANK
+  PRONUNCIATION
+  DEFINITION
+  USAGE
+}
+
+enum AchievementType {
+  WORDS_LEARNED
+  TESTS_COMPLETED
+  STREAK_DAYS
+  PERFECT_SCORES
+  TIME_SPENT
+  COLLECTIONS_CREATED
+}

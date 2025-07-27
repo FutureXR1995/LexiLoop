@@ -1,0 +1,182 @@
+{
+  "common": {
+    "loading": "Đang tải...",
+    "error": "Đã xảy ra lỗi",
+    "success": "Thành công",
+    "save": "Lưu",
+    "cancel": "Hủy",
+    "close": "Đóng",
+    "next": "Tiếp theo",
+    "back": "Quay lại",
+    "finish": "Hoàn thành",
+    "start": "Bắt đầu",
+    "continue": "Tiếp tục",
+    "retry": "Thử lại",
+    "delete": "Xóa",
+    "edit": "Chỉnh sửa",
+    "add": "Thêm",
+    "search": "Tìm kiếm",
+    "filter": "Lọc",
+    "settings": "Cài đặt",
+    "help": "Trợ giúp",
+    "about": "Về chúng tôi",
+    "contact": "Liên hệ",
+    "privacy": "Chính sách bảo mật",
+    "terms": "Điều khoản dịch vụ"
+  },
+  "navigation": {
+    "home": "Trang chủ",
+    "learn": "Học tập",
+    "library": "Thư viện",
+    "progress": "Tiến độ",
+    "profile": "Hồ sơ",
+    "logout": "Đăng xuất",
+    "login": "Đăng nhập",
+    "register": "Đăng ký"
+  },
+  "home": {
+    "title": "LexiLoop - Học từ vựng bằng AI",
+    "subtitle": "Học từ vựng qua câu chuyện AI",
+    "description": "Nắm vững từ mới một cách tự nhiên thông qua những câu chuyện do AI tạo ra. Trải nghiệm học tập cá nhân hóa với thuật toán lặp lại có khoảng cách và theo dõi tiến độ.",
+    "startLearning": "Bắt đầu học",
+    "viewDemo": "Xem demo",
+    "features": {
+      "immersiveReading": {
+        "title": "Đọc tương tác",
+        "description": "Trải nghiệm đọc được nâng cao với từ vựng tương tác và hỗ trợ TTS"
+      },
+      "threeLayerTesting": {
+        "title": "Kiểm tra ba lớp",
+        "description": "Nghĩa từ, luyện tập đánh máy và bài kiểm tra hiểu biết đảm bảo học sâu"
+      },
+      "spacedRepetition": {
+        "title": "Lặp lại có khoảng cách",
+        "description": "Thuật toán thông minh đưa ra những từ bạn cần luyện tập ở khoảng thời gian tối ưu"
+      }
+    },
+    "howItWorks": {
+      "title": "Cách hoạt động",
+      "steps": {
+        "chooseWords": {
+          "title": "Chọn từ",
+          "description": "Chọn từ vựng từ các sách từ được tuyển chọn hoặc tạo bộ sưu tập riêng"
+        },
+        "readStories": {
+          "title": "Đọc câu chuyện",
+          "description": "AI tạo ra những câu chuyện hấp dẫn tự nhiên kết hợp các từ bạn đã chọn"
+        },
+        "testAndLearn": {
+          "title": "Kiểm tra và học",
+          "description": "Hoàn thành các bài kiểm tra tương tác để củng cố học tập và theo dõi tiến độ"
+        }
+      }
+    },
+    "status": {
+      "title": "🎉 Giai đoạn 1 hoàn thành - Sẵn sàng sản xuất",
+      "description": "Tất cả tính năng cốt lõi đã được triển khai và sẵn sàng cho việc triển khai sản xuất! Phát triển giai đoạn 2 sẽ bắt đầu sớm.",
+      "features": "✅ UI frontend hoàn chỉnh • ✅ Xác thực người dùng • ✅ Tích hợp cơ sở dữ liệu\n✅ Thiết kế responsive • ✅ Framework API • ✅ Hệ thống ôn tập lỗi\n✅ Cài đặt kế hoạch học • ✅ Quản lý hồ sơ • ✅ Bộ sưu tập từ vựng",
+      "deployment": "🚀 Sẵn sàng triển khai sản xuất với Docker & Nginx\n🔒 Cấu hình header bảo mật và tối ưu hóa hoàn tất"
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Đăng nhập",
+      "email": "Địa chỉ email",
+      "password": "Mật khẩu",
+      "submit": "Đăng nhập",
+      "forgotPassword": "Quên mật khẩu?",
+      "noAccount": "Chưa có tài khoản?",
+      "createAccount": "Tạo tài khoản"
+    },
+    "register": {
+      "title": "Tạo tài khoản",
+      "name": "Họ tên",
+      "email": "Địa chỉ email",
+      "password": "Mật khẩu",
+      "confirmPassword": "Xác nhận mật khẩu",
+      "submit": "Tạo tài khoản",
+      "hasAccount": "Đã có tài khoản?",
+      "signIn": "Đăng nhập ngay"
+    }
+  },
+  "learning": {
+    "vocabulary": "Từ vựng",
+    "story": "Câu chuyện",
+    "test": "Kiểm tra",
+    "progress": "Tiến độ",
+    "difficulty": {
+      "beginner": "Cơ bản",
+      "intermediate": "Trung cấp",
+      "advanced": "Nâng cao"
+    },
+    "mastery": {
+      "new": "Mới",
+      "learning": "Đang học",
+      "review": "Ôn tập",
+      "mastered": "Đã thành thạo"
+    }
+  },
+  "language": {
+    "selector": {
+      "title": "Chọn ngôn ngữ / Choose Language",
+      "current": "Ngôn ngữ hiện tại",
+      "available": "Ngôn ngữ có sẵn",
+      "apply": "Áp dụng",
+      "cancel": "Hủy"
+    },
+    "names": {
+      "ja-JP": "日本語",
+      "zh-CN": "简体中文",
+      "zh-TW": "繁體中文",
+      "ko-KR": "한국어",
+      "vi-VN": "Tiếng Việt",
+      "en-US": "English",
+      "th-TH": "ไทย",
+      "ms-MY": "Bahasa Melayu",
+      "id-ID": "Bahasa Indonesia",
+      "tl-PH": "Filipino"
+    },
+    "regions": {
+      "ja-JP": "日本のユーザー",
+      "zh-CN": "中国大陆用户",
+      "zh-TW": "台湾・香港用户",
+      "ko-KR": "한국 사용자",
+      "vi-VN": "Người dùng Việt Nam",
+      "en-US": "International Users",
+      "th-TH": "ผู้ใช้ไทย",
+      "ms-MY": "Pengguna Malaysia",
+      "id-ID": "Pengguna Indonesia", 
+      "tl-PH": "Mga User sa Pilipinas"
+    }
+  },
+  "pwa": {
+    "install": {
+      "title": "Cài đặt LexiLoop",
+      "description": "Thêm vào màn hình chính để truy cập nhanh và học offline",
+      "button": "Cài đặt ứng dụng",
+      "dismiss": "Để sau"
+    },
+    "offline": {
+      "title": "Chế độ offline",
+      "description": "Không có kết nối internet. Bạn có thể sử dụng tính năng offline để tiếp tục học.",
+      "button": "Tiếp tục học offline"
+    }
+  },
+  "errors": {
+    "404": {
+      "title": "Không tìm thấy trang",
+      "description": "Xin lỗi, trang bạn truy cập không tồn tại hoặc đã được di chuyển.",
+      "button": "Về trang chủ"
+    },
+    "500": {
+      "title": "Lỗi máy chủ",
+      "description": "Xin lỗi, máy chủ gặp phải một số vấn đề. Chúng tôi đang nỗ lực khắc phục.",
+      "button": "Tải lại trang"
+    },
+    "network": {
+      "title": "Lỗi mạng",
+      "description": "Vui lòng kiểm tra kết nối internet của bạn.",
+      "button": "Thử lại"
+    }
+  }
+}

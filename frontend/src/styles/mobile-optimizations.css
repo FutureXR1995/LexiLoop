@@ -1,0 +1,273 @@
+/**
+ * Mobile PWA Optimizations
+ * Additional styles for better mobile experience
+ */
+
+/* Prevent zoom on input focus in iOS Safari */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+textarea,
+select {
+  font-size: 16px; /* Prevents zoom on iOS */
+}
+
+/* iOS Safari PWA status bar padding */
+@supports (padding: max(0px)) {
+  .safe-area-top {
+    padding-top: max(1rem, env(safe-area-inset-top));
+  }
+  
+  .safe-area-bottom {
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  }
+  
+  .safe-area-left {
+    padding-left: max(1rem, env(safe-area-inset-left));
+  }
+  
+  .safe-area-right {
+    padding-right: max(1rem, env(safe-area-inset-right));
+  }
+}
+
+/* PWA display mode specific styles */
+@media (display-mode: standalone) {
+  /* Hide browser-specific elements when in PWA mode */
+  .browser-only {
+    display: none !important;
+  }
+  
+  /* Add PWA-specific styles */
+  body {
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+  }
+  
+  /* Enhance touch targets */
+  button,
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* Improved touch interactions */
+.touch-optimized {
+  -webkit-tap-highlight-color: rgba(79, 70, 229, 0.1);
+  touch-action: manipulation;
+}
+
+/* Better scrolling on mobile */
+.smooth-scroll {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+
+/* Mobile-first responsive breakpoints */
+@media (max-width: 640px) {
+  /* Adjust font sizes for mobile readability */
+  h1 { font-size: 1.875rem; }
+  h2 { font-size: 1.5rem; }
+  h3 { font-size: 1.25rem; }
+  
+  /* Improve button sizes for touch */
+  .btn-mobile {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    min-height: 48px;
+  }
+  
+  /* Optimize modal/dialog for mobile */
+  .modal-mobile {
+    margin: 0;
+    min-height: 100vh;
+    border-radius: 0;
+  }
+  
+  /* Better spacing for mobile cards */
+  .card-mobile {
+    margin: 0.5rem;
+    padding: 1rem;
+  }
+  
+  /* Mobile navigation optimizations */
+  .nav-mobile {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: white;
+    border-top: 1px solid #e5e7eb;
+    padding: 0.5rem;
+    z-index: 50;
+  }
+}
+
+/* Landscape orientation optimizations */
+@media (max-height: 600px) and (orientation: landscape) {
+  .landscape-compact {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
+  
+  .landscape-hide {
+    display: none;
+  }
+}
+
+/* Dark mode support for PWA */
+@media (prefers-color-scheme: dark) {
+  .pwa-dark {
+    background-color: #111827;
+    color: #f9fafb;
+  }
+}
+
+/* Reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .high-contrast {
+    border: 2px solid currentColor;
+  }
+  
+  button {
+    border: 2px solid currentColor;
+  }
+}
+
+/* Loading states optimized for mobile */
+.mobile-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+}
+
+.loading-spinner {
+  width: 2rem;
+  height: 2rem;
+  border: 3px solid #e5e7eb;
+  border-top: 3px solid #4f46e5;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Offline indicator styles */
+.offline-indicator {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: #ef4444;
+  color: white;
+  text-align: center;
+  padding: 0.5rem;
+  font-size: 0.875rem;
+  z-index: 100;
+  transform: translateY(-100%);
+  transition: transform 0.3s ease;
+}
+
+.offline-indicator.show {
+  transform: translateY(0);
+}
+
+/* PWA splash screen simulation */
+.pwa-splash {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.pwa-splash.hidden {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+}
+
+/* Better focus indicators for keyboard navigation */
+.focus-visible:focus {
+  outline: 2px solid #4f46e5;
+  outline-offset: 2px;
+}
+
+/* Improved text selection on mobile */
+.selectable-text {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+/* Card stack animation for mobile navigation */
+.card-stack {
+  transform-style: preserve-3d;
+  perspective: 1000px;
+}
+
+.card-stack-item {
+  transition: transform 0.3s ease;
+}
+
+.card-stack-item:hover,
+.card-stack-item:focus {
+  transform: translateZ(10px);
+}
+
+/* Mobile-optimized dropdown menus */
+.dropdown-mobile {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: white;
+  border-radius: 1rem 1rem 0 0;
+  box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.1);
+  z-index: 50;
+  transform: translateY(100%);
+  transition: transform 0.3s ease;
+}
+
+.dropdown-mobile.open {
+  transform: translateY(0);
+}
+
+/* Swipe gesture indicators */
+.swipe-indicator {
+  position: relative;
+}
+
+.swipe-indicator::after {
+  content: '';
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-left: 6px solid #9ca3af;
+  border-top: 4px solid transparent;
+  border-bottom: 4px solid transparent;
+}

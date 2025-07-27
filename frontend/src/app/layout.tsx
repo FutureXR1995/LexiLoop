@@ -1,6 +1,9 @@
 import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
+import PWAInstallPrompt from '@/components/PWAInstallPrompt';
+import MobileNavigation from '@/components/MobileNavigation';
+import { Suspense } from 'react';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -175,7 +178,33 @@ export default function RootLayout({
             This application requires JavaScript to function properly. Please enable JavaScript in your browser.
           </div>
         </noscript>
+        
         {children}
+        
+        <Suspense fallback={null}>
+          <PWAInstallPrompt />
+        </Suspense>
+        
+        <MobileNavigation />
+        
+        {/* Service Worker Registration */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              if ('serviceWorker' in navigator) {
+                window.addEventListener('load', function() {
+                  navigator.serviceWorker.register('/sw.js', { scope: '/' })
+                    .then(function(registration) {
+                      console.log('SW registered: ', registration);
+                    })
+                    .catch(function(registrationError) {
+                      console.log('SW registration failed: ', registrationError);
+                    });
+                });
+              }
+            `,
+          }}
+        />
       </body>
     </html>
   );

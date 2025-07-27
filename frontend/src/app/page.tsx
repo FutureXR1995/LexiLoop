@@ -7,63 +7,72 @@ import Link from 'next/link';
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 pb-20 md:pb-0">
       {/* Header */}
-      <header className="bg-white shadow-sm">
+      <header className="bg-white shadow-sm safe-area-top">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
             <div className="flex items-center">
-              <h1 className="text-2xl font-bold text-indigo-600">LexiLoop</h1>
-              <span className="ml-2 text-sm text-gray-500">v0.1.0</span>
+              <h1 className="text-xl sm:text-2xl font-bold text-indigo-600">LexiLoop</h1>
+              <span className="ml-2 text-xs sm:text-sm text-gray-500">v0.1.0</span>
             </div>
-            <nav className="flex space-x-4">
-              <Link href="/learn" className="text-gray-600 hover:text-indigo-600">
+            
+            {/* Mobile Menu - Hidden on mobile, simplified navigation */}
+            <nav className="hidden sm:flex space-x-2 lg:space-x-4">
+              <Link href="/learn" className="text-gray-600 hover:text-indigo-600 text-sm lg:text-base touch-optimized">
                 Learn
               </Link>
-              <Link href="/library" className="text-gray-600 hover:text-indigo-600">
+              <Link href="/library" className="text-gray-600 hover:text-indigo-600 text-sm lg:text-base touch-optimized">
                 Library
               </Link>
-              <Link href="/progress" className="text-gray-600 hover:text-indigo-600">
+              <Link href="/progress" className="text-gray-600 hover:text-indigo-600 text-sm lg:text-base touch-optimized">
                 Progress
               </Link>
-              <Link href="/advanced-test" className="text-gray-600 hover:text-indigo-600">
+              <Link href="/advanced-test" className="hidden lg:block text-gray-600 hover:text-indigo-600 text-sm lg:text-base touch-optimized">
                 Advanced Tests
               </Link>
-              <Link href="/social" className="text-gray-600 hover:text-indigo-600">
+              <Link href="/social" className="hidden lg:block text-gray-600 hover:text-indigo-600 text-sm lg:text-base touch-optimized">
                 Social
               </Link>
-              <Link href="/auth/login" className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700">
+              <Link href="/auth/login" className="bg-indigo-600 text-white px-3 py-1.5 lg:px-4 lg:py-2 rounded-lg hover:bg-indigo-700 text-sm lg:text-base touch-optimized">
                 Login
               </Link>
             </nav>
+            
+            {/* Mobile CTA */}
+            <div className="sm:hidden">
+              <Link href="/learn" className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 text-sm font-medium touch-optimized">
+                Start
+              </Link>
+            </div>
           </div>
         </div>
       </header>
 
       {/* Hero Section */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 safe-area-left safe-area-right">
         <div className="text-center">
-          <h2 className="text-4xl font-extrabold text-gray-900 sm:text-5xl md:text-6xl">
+          <h2 className="text-3xl font-extrabold text-gray-900 sm:text-4xl md:text-5xl lg:text-6xl heading-responsive">
             Learn Vocabulary Through
-            <span className="text-indigo-600"> AI Stories</span>
+            <span className="text-indigo-600 block sm:inline"> AI Stories</span>
           </h2>
-          <p className="mt-3 max-w-md mx-auto text-base text-gray-500 sm:text-lg md:mt-5 md:text-xl md:max-w-3xl">
+          <p className="mt-4 max-w-sm mx-auto text-base text-gray-500 sm:text-lg sm:max-w-md md:mt-5 md:text-xl md:max-w-3xl text-responsive">
             Master new words naturally with AI-generated stories that create meaningful contexts for every vocabulary word you learn.
           </p>
           
-          <div className="mt-5 max-w-md mx-auto sm:flex sm:justify-center md:mt-8">
+          <div className="mt-6 max-w-md mx-auto sm:flex sm:justify-center md:mt-8 space-y-3 sm:space-y-0 sm:space-x-3">
             <div className="rounded-md shadow">
               <Link
                 href="/learn"
-                className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 md:py-4 md:text-lg md:px-10"
+                className="w-full flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 md:py-4 md:text-lg md:px-10 touch-optimized btn-mobile"
               >
                 Start Learning
               </Link>
             </div>
-            <div className="mt-3 sm:mt-0 sm:ml-3">
+            <div>
               <Link
                 href="/demo"
-                className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200 md:py-4 md:text-lg md:px-10"
+                className="w-full flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200 md:py-4 md:text-lg md:px-10 touch-optimized btn-mobile"
               >
                 View Demo
               </Link>
@@ -72,42 +81,42 @@ export default function Home() {
         </div>
 
         {/* Features Section */}
-        <div className="mt-16">
-          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-12 sm:mt-16">
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 sm:gap-8">
             {/* Feature 1 */}
-            <div className="bg-white rounded-lg shadow-md p-6">
+            <div className="bg-white rounded-lg shadow-md p-4 sm:p-6 card-mobile card-hover touch-optimized">
               <div className="text-center">
-                <div className="text-3xl mb-4">📖</div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                <div className="text-2xl sm:text-3xl mb-3 sm:mb-4">📖</div>
+                <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2">
                   Immersive Reading
                 </h3>
-                <p className="text-gray-600">
+                <p className="text-sm sm:text-base text-gray-600 text-responsive">
                   Enhanced reading experience with interactive vocabulary highlighting and TTS support
                 </p>
               </div>
             </div>
 
             {/* Feature 2 */}
-            <div className="bg-white rounded-lg shadow-md p-6">
+            <div className="bg-white rounded-lg shadow-md p-4 sm:p-6 card-mobile card-hover touch-optimized">
               <div className="text-center">
-                <div className="text-3xl mb-4">🎯</div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                <div className="text-2xl sm:text-3xl mb-3 sm:mb-4">🎯</div>
+                <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2">
                   Three-Layer Testing
                 </h3>
-                <p className="text-gray-600">
+                <p className="text-sm sm:text-base text-gray-600 text-responsive">
                   Word meaning, typing practice, and comprehension tests ensure deep learning
                 </p>
               </div>
             </div>
 
             {/* Feature 3 */}
-            <div className="bg-white rounded-lg shadow-md p-6">
+            <div className="bg-white rounded-lg shadow-md p-4 sm:p-6 card-mobile card-hover touch-optimized">
               <div className="text-center">
-                <div className="text-3xl mb-4">🔄</div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                <div className="text-2xl sm:text-3xl mb-3 sm:mb-4">🔄</div>
+                <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2">
                   Spaced Repetition
                 </h3>
-                <p className="text-gray-600">
+                <p className="text-sm sm:text-base text-gray-600 text-responsive">
                   Smart algorithm brings back words you need to practice at optimal intervals
                 </p>
               </div>
@@ -116,38 +125,38 @@ export default function Home() {
         </div>
 
         {/* Demo Section */}
-        <div className="mt-16 bg-white rounded-lg shadow-lg p-8">
-          <h3 className="text-2xl font-bold text-center text-gray-900 mb-8">
+        <div className="mt-12 sm:mt-16 bg-white rounded-lg shadow-lg p-4 sm:p-6 lg:p-8 card-mobile">
+          <h3 className="text-xl sm:text-2xl font-bold text-center text-gray-900 mb-6 sm:mb-8">
             How It Works
           </h3>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="text-center">
-              <div className="bg-indigo-100 rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-4">
-                <span className="text-indigo-600 font-bold">1</span>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
+            <div className="text-center touch-optimized">
+              <div className="bg-indigo-100 rounded-full w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center mx-auto mb-3 sm:mb-4">
+                <span className="text-indigo-600 font-bold text-sm sm:text-base">1</span>
               </div>
-              <h4 className="font-semibold mb-2">Choose Words</h4>
-              <p className="text-gray-600 text-sm">
+              <h4 className="font-semibold mb-2 text-sm sm:text-base">Choose Words</h4>
+              <p className="text-gray-600 text-xs sm:text-sm text-responsive">
                 Select vocabulary words from our curated word books or create your own
               </p>
             </div>
             
-            <div className="text-center">
-              <div className="bg-indigo-100 rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-4">
-                <span className="text-indigo-600 font-bold">2</span>
+            <div className="text-center touch-optimized">
+              <div className="bg-indigo-100 rounded-full w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center mx-auto mb-3 sm:mb-4">
+                <span className="text-indigo-600 font-bold text-sm sm:text-base">2</span>
               </div>
-              <h4 className="font-semibold mb-2">Read Stories</h4>
-              <p className="text-gray-600 text-sm">
+              <h4 className="font-semibold mb-2 text-sm sm:text-base">Read Stories</h4>
+              <p className="text-gray-600 text-xs sm:text-sm text-responsive">
                 AI generates engaging stories that naturally incorporate your chosen words
               </p>
             </div>
             
-            <div className="text-center">
-              <div className="bg-indigo-100 rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-4">
-                <span className="text-indigo-600 font-bold">3</span>
+            <div className="text-center touch-optimized">
+              <div className="bg-indigo-100 rounded-full w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center mx-auto mb-3 sm:mb-4">
+                <span className="text-indigo-600 font-bold text-sm sm:text-base">3</span>
               </div>
-              <h4 className="font-semibold mb-2">Test & Learn</h4>
-              <p className="text-gray-600 text-sm">
+              <h4 className="font-semibold mb-2 text-sm sm:text-base">Test & Learn</h4>
+              <p className="text-gray-600 text-xs sm:text-sm text-responsive">
                 Complete interactive tests to reinforce your learning and track progress
               </p>
             </div>
@@ -155,21 +164,21 @@ export default function Home() {
         </div>
 
         {/* Status Section */}
-        <div className="mt-16 bg-green-50 border border-green-200 rounded-lg p-6">
+        <div className="mt-12 sm:mt-16 bg-green-50 border border-green-200 rounded-lg p-4 sm:p-6 card-mobile">
           <div className="text-center">
-            <h3 className="text-lg font-semibold text-green-800 mb-2">
+            <h3 className="text-base sm:text-lg font-semibold text-green-800 mb-2">
               🎉 Phase 1 Complete - Production Ready
             </h3>
-            <p className="text-green-700">
+            <p className="text-sm sm:text-base text-green-700 text-responsive">
               All core features implemented and ready for production deployment!
               Phase 2 development starting soon.
             </p>
-            <div className="mt-4 text-sm text-green-600">
-              <p>✅ Complete Frontend UI • ✅ User Authentication • ✅ Database Integration</p>
-              <p>✅ Responsive Design • ✅ API Framework • ✅ Error Review System</p>
-              <p>✅ Learning Plan Settings • ✅ Profile Management • ✅ Vocabulary Collections</p>
+            <div className="mt-4 text-xs sm:text-sm text-green-600 space-y-1 sm:space-y-0">
+              <p className="block sm:inline">✅ Complete Frontend UI • ✅ User Authentication • ✅ Database Integration</p>
+              <p className="block sm:inline">✅ Responsive Design • ✅ API Framework • ✅ Error Review System</p>
+              <p className="block sm:inline">✅ Learning Plan Settings • ✅ Profile Management • ✅ Vocabulary Collections</p>
             </div>
-            <div className="mt-4 text-xs text-green-500">
+            <div className="mt-4 text-xs text-green-500 space-y-1">
               <p>🚀 Ready for production deployment with Docker & Nginx</p>
               <p>🔒 Security headers and optimizations configured</p>
             </div>
@@ -178,10 +187,10 @@ export default function Home() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-gray-800 text-white py-8 mt-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <p>&copy; 2024 LexiLoop. Made with ❤️ for language learners.</p>
-          <p className="mt-2 text-gray-400 text-sm">
+      <footer className="bg-gray-800 text-white py-6 sm:py-8 mt-12 sm:mt-16 safe-area-bottom">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center safe-area-left safe-area-right">
+          <p className="text-sm sm:text-base">&copy; 2024 LexiLoop. Made with ❤️ for language learners.</p>
+          <p className="mt-2 text-gray-400 text-xs sm:text-sm text-responsive">
             Powered by OpenAI GPT-4o • Azure Speech Services • Next.js
           </p>
         </div>

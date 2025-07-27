@@ -1,0 +1,182 @@
+{
+  "common": {
+    "loading": "読み込み中...",
+    "error": "エラーが発生しました",
+    "success": "成功しました",
+    "save": "保存",
+    "cancel": "キャンセル",
+    "close": "閉じる",
+    "next": "次へ",
+    "back": "戻る",
+    "finish": "完了",
+    "start": "開始",
+    "continue": "続ける",
+    "retry": "再試行",
+    "delete": "削除",
+    "edit": "編集",
+    "add": "追加",
+    "search": "検索",
+    "filter": "フィルター",
+    "settings": "設定",
+    "help": "ヘルプ",
+    "about": "について",
+    "contact": "お問い合わせ",
+    "privacy": "プライバシーポリシー",
+    "terms": "利用規約"
+  },
+  "navigation": {
+    "home": "ホーム",
+    "learn": "学習",
+    "library": "ライブラリ",
+    "progress": "進歩",
+    "profile": "プロフィール",
+    "logout": "ログアウト",
+    "login": "ログイン",
+    "register": "登録"
+  },
+  "home": {
+    "title": "LexiLoop - AI英語学習",
+    "subtitle": "AIストーリーで英語を学ぼう",
+    "description": "AI が生成するストーリーを通して、自然に新しい単語を覚えましょう。パーソナライズされた学習体験で、間隔反復法と進歩の追跡機能付き。",
+    "startLearning": "学習を始める",
+    "viewDemo": "デモを見る",
+    "features": {
+      "immersiveReading": {
+        "title": "没入型読書",
+        "description": "インタラクティブな語彙ハイライトとTTSサポートで強化された読書体験"
+      },
+      "threeLayerTesting": {
+        "title": "三層テスト",
+        "description": "単語の意味、タイピング練習、理解テストで深い学習を保証"
+      },
+      "spacedRepetition": {
+        "title": "間隔反復",
+        "description": "スマートアルゴリズムが最適な間隔で練習が必要な単語を再出題"
+      }
+    },
+    "howItWorks": {
+      "title": "使い方",
+      "steps": {
+        "chooseWords": {
+          "title": "単語を選ぶ",
+          "description": "厳選された単語帳から語彙を選択するか、独自の単語帳を作成"
+        },
+        "readStories": {
+          "title": "ストーリーを読む",
+          "description": "AIが選択した単語を自然に組み込んだ魅力的なストーリーを生成"
+        },
+        "testAndLearn": {
+          "title": "テストして学ぶ",
+          "description": "インタラクティブなテストで学習を強化し、進歩を追跡"
+        }
+      }
+    },
+    "status": {
+      "title": "🎉 フェーズ1完了 - 本番稼働準備完了",
+      "description": "すべてのコア機能が実装され、本番環境への展開準備が整いました！フェーズ2の開発がまもなく開始されます。",
+      "features": "✅ 完全なフロントエンドUI • ✅ ユーザー認証 • ✅ データベース統合\n✅ レスポンシブデザイン • ✅ APIフレームワーク • ✅ エラー復習システム\n✅ 学習プラン設定 • ✅ プロフィール管理 • ✅ 語彙コレクション",
+      "deployment": "🚀 Docker & Nginxでの本番環境展開準備完了\n🔒 セキュリティヘッダーと最適化設定完了"
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "ログイン",
+      "email": "メールアドレス",
+      "password": "パスワード",
+      "submit": "ログイン",
+      "forgotPassword": "パスワードを忘れた方",
+      "noAccount": "アカウントをお持ちでない方",
+      "createAccount": "アカウントを作成"
+    },
+    "register": {
+      "title": "アカウント作成",
+      "name": "お名前",
+      "email": "メールアドレス",
+      "password": "パスワード",
+      "confirmPassword": "パスワード確認",
+      "submit": "アカウント作成",
+      "hasAccount": "既にアカウントをお持ちの方",
+      "signIn": "ログイン"
+    }
+  },
+  "learning": {
+    "vocabulary": "語彙",
+    "story": "ストーリー",
+    "test": "テスト",
+    "progress": "進歩",
+    "difficulty": {
+      "beginner": "初級",
+      "intermediate": "中級",
+      "advanced": "上級"
+    },
+    "mastery": {
+      "new": "新規",
+      "learning": "学習中",
+      "review": "復習中",
+      "mastered": "習得済み"
+    }
+  },
+  "language": {
+    "selector": {
+      "title": "言語を選択 / Choose Language",
+      "current": "現在の言語",
+      "available": "利用可能な言語",
+      "apply": "適用",
+      "cancel": "キャンセル"
+    },
+    "names": {
+      "ja-JP": "日本語",
+      "zh-CN": "简体中文",
+      "zh-TW": "繁體中文",
+      "ko-KR": "한국어",
+      "vi-VN": "Tiếng Việt",
+      "en-US": "English",
+      "th-TH": "ไทย",
+      "ms-MY": "Bahasa Melayu",
+      "id-ID": "Bahasa Indonesia",
+      "tl-PH": "Filipino"
+    },
+    "regions": {
+      "ja-JP": "日本のユーザー",
+      "zh-CN": "中国大陆用户",
+      "zh-TW": "台湾・香港用户",
+      "ko-KR": "한국 사용자",
+      "vi-VN": "Người dùng Việt Nam",
+      "en-US": "International Users",
+      "th-TH": "ผู้ใช้ไทย",
+      "ms-MY": "Pengguna Malaysia",
+      "id-ID": "Pengguna Indonesia", 
+      "tl-PH": "Mga User sa Pilipinas"
+    }
+  },
+  "pwa": {
+    "install": {
+      "title": "LexiLoopをインストール",
+      "description": "ホーム画面に追加してクイックアクセスとオフライン学習を楽しもう",
+      "button": "アプリをインストール",
+      "dismiss": "後で"
+    },
+    "offline": {
+      "title": "オフラインモード",
+      "description": "インターネット接続がありません。オフライン機能を使用して学習を続けることができます。",
+      "button": "オフライン学習を続ける"
+    }
+  },
+  "errors": {
+    "404": {
+      "title": "ページが見つかりません",
+      "description": "申し訳ございませんが、お探しのページは存在しないか移動されました。",
+      "button": "ホームに戻る"
+    },
+    "500": {
+      "title": "サーバーエラー",
+      "description": "申し訳ございませんが、サーバーで問題が発生しました。現在修復作業中です。",
+      "button": "ページを再読み込み"
+    },
+    "network": {
+      "title": "ネットワークエラー",
+      "description": "インターネット接続を確認してください。",
+      "button": "再試行"
+    }
+  }
+}

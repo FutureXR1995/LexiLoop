@@ -1,8 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output:'export',
-  trailingSlash:true,
-  // Image optimization enabled for dynamic apps
+  // Static export for Azure Static Web Apps
+  output: 'export',
+  trailingSlash: true,
+  
+  // Image optimization disabled for static export
   images: { 
     unoptimized: true
   },
