@@ -4,7 +4,11 @@ module.exports = async function (context, req) {
     if (req.method !== 'POST') {
         context.res = {
             status: 405,
-            body: { error: 'Method not allowed' }
+            headers: { 
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*'
+            },
+            body: JSON.stringify({ error: 'Method not allowed' })
         };
         return;
     }
@@ -32,21 +36,30 @@ module.exports = async function (context, req) {
 
         context.res = {
             status: 201,
-            headers: { 'Content-Type': 'application/json' },
-            body: {
+            headers: { 
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'POST, OPTIONS',
+                'Access-Control-Allow-Headers': 'Content-Type'
+            },
+            body: JSON.stringify({
                 success: true,
                 message: '用户注册成功',
                 user
-            }
+            })
         };
     } catch (error) {
         context.log.error('Registration error:', error);
         context.res = {
             status: 500,
-            body: { 
+            headers: { 
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*'
+            },
+            body: JSON.stringify({ 
                 error: 'Internal server error',
                 details: error.message 
-            }
+            })
         };
     }
 };

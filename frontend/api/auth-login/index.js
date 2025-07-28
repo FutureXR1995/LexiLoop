@@ -4,7 +4,11 @@ module.exports = async function (context, req) {
     if (req.method !== 'POST') {
         context.res = {
             status: 405,
-            body: { error: 'Method not allowed' }
+            headers: { 
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*'
+            },
+            body: JSON.stringify({ error: 'Method not allowed' })
         };
         return;
     }
@@ -32,30 +36,41 @@ module.exports = async function (context, req) {
 
             context.res = {
                 status: 200,
-                headers: { 'Content-Type': 'application/json' },
-                body: {
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*'
+                },
+                body: JSON.stringify({
                     success: true,
                     message: '登录成功',
                     user
-                }
+                })
             };
         } else {
             context.res = {
                 status: 401,
-                body: { 
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*'
+                },
+                body: JSON.stringify({ 
                     error: '用户名或密码错误',
                     hint: 'Use test@lexiloop.com / password123'
-                }
+                })
             };
         }
     } catch (error) {
         context.log.error('Login error:', error);
         context.res = {
             status: 500,
-            body: { 
+            headers: { 
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*'
+            },
+            body: JSON.stringify({ 
                 error: 'Internal server error',
                 details: error.message 
-            }
+            })
         };
     }
 };

@@ -4,7 +4,11 @@ module.exports = async function (context, req) {
     if (req.method !== 'POST') {
         context.res = {
             status: 405,
-            body: { error: 'Method not allowed' }
+            headers: { 
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*'
+            },
+            body: JSON.stringify({ error: 'Method not allowed' })
         };
         return;
     }
@@ -15,7 +19,11 @@ module.exports = async function (context, req) {
         if (!words || !Array.isArray(words) || words.length === 0) {
             context.res = {
                 status: 400,
-                body: { error: 'Missing or empty words array' }
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*'
+                },
+                body: JSON.stringify({ error: 'Missing or empty words array' })
             };
             return;
         }
@@ -41,8 +49,11 @@ ${words.map(word => `• ${word.charAt(0).toUpperCase() + word.slice(1)}`).join(
 
         context.res = {
             status: 200,
-            headers: { 'Content-Type': 'application/json' },
-            body: {
+            headers: { 
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*'
+            },
+            body: JSON.stringify({
                 success: true,
                 story,
                 metadata: {
@@ -52,16 +63,20 @@ ${words.map(word => `• ${word.charAt(0).toUpperCase() + word.slice(1)}`).join(
                     length,
                     generatedAt: new Date().toISOString()
                 }
-            }
+            })
         };
     } catch (error) {
         context.log.error('Story generation error:', error);
         context.res = {
             status: 500,
-            body: { 
+            headers: { 
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*'
+            },
+            body: JSON.stringify({ 
                 error: 'Internal server error',
                 details: error.message 
-            }
+            })
         };
     }
 };
