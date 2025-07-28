@@ -1,10 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output:'export',
-  trailingSlash:ture,
+  trailingSlash:true,
   // Image optimization enabled for dynamic apps
   images: { 
-    unoptimized: ture
+    unoptimized: true
   },
 
   // Performance optimizations
