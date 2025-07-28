@@ -4,7 +4,11 @@ module.exports = async function (context, req) {
     if (req.method !== 'POST') {
         context.res = {
             status: 405,
-            body: { error: 'Method not allowed' }
+            headers: { 
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*'
+            },
+            body: JSON.stringify({ error: 'Method not allowed' })
         };
         return;
     }
@@ -15,7 +19,11 @@ module.exports = async function (context, req) {
         if (!text) {
             context.res = {
                 status: 400,
-                body: { error: 'Missing text parameter' }
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*'
+                },
+                body: JSON.stringify({ error: 'Missing text parameter' })
             };
             return;
         }
@@ -53,7 +61,8 @@ module.exports = async function (context, req) {
             status: 200,
             headers: { 
                 'Content-Type': 'audio/wav',
-                'Content-Disposition': 'attachment; filename="speech.wav"'
+                'Content-Disposition': 'attachment; filename="speech.wav"',
+                'Access-Control-Allow-Origin': '*'
             },
             body: dummyWavHeader
         };
@@ -61,10 +70,14 @@ module.exports = async function (context, req) {
         context.log.error('Speech synthesis error:', error);
         context.res = {
             status: 500,
-            body: { 
+            headers: { 
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*'
+            },
+            body: JSON.stringify({ 
                 error: 'Internal server error',
                 details: error.message 
-            }
+            })
         };
     }
 };

@@ -19,7 +19,11 @@ module.exports = async function (context, req) {
         if (!email || !password) {
             context.res = {
                 status: 400,
-                body: { error: 'Missing email or password' }
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*'
+                },
+                body: JSON.stringify({ error: 'Missing email or password' })
             };
             return;
         }

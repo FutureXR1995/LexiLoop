@@ -19,7 +19,11 @@ module.exports = async function (context, req) {
         if (!email || !password || !name) {
             context.res = {
                 status: 400,
-                body: { error: 'Missing required fields: email, password, name' }
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*'
+                },
+                body: JSON.stringify({ error: 'Missing required fields: email, password, name' })
             };
             return;
         }

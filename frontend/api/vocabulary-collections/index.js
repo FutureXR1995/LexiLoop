@@ -31,12 +31,15 @@ module.exports = async function (context, req) {
 
             context.res = {
                 status: 200,
-                headers: { 'Content-Type': 'application/json' },
-                body: {
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*'
+                },
+                body: JSON.stringify({
                     success: true,
                     collections,
                     total: collections.length
-                }
+                })
             };
         } else if (req.method === 'POST') {
             // 创建新的词汇集合
@@ -45,7 +48,11 @@ module.exports = async function (context, req) {
             if (!title) {
                 context.res = {
                     status: 400,
-                    body: { error: 'Missing title parameter' }
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Access-Control-Allow-Origin': '*'
+                    },
+                    body: JSON.stringify({ error: 'Missing title parameter' })
                 };
                 return;
             }
@@ -64,27 +71,38 @@ module.exports = async function (context, req) {
 
             context.res = {
                 status: 201,
-                headers: { 'Content-Type': 'application/json' },
-                body: {
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*'
+                },
+                body: JSON.stringify({
                     success: true,
                     message: '词汇集合创建成功',
                     collection: newCollection
-                }
+                })
             };
         } else {
             context.res = {
                 status: 405,
-                body: { error: 'Method not allowed' }
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*'
+                },
+                body: JSON.stringify({ error: 'Method not allowed' })
             };
         }
     } catch (error) {
         context.log.error('Vocabulary collections error:', error);
         context.res = {
             status: 500,
-            body: { 
+            headers: { 
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*'
+            },
+            body: JSON.stringify({ 
                 error: 'Internal server error',
                 details: error.message 
-            }
+            })
         };
     }
 };
