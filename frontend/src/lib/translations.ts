@@ -31,12 +31,12 @@ export interface Translations {
     back: string;
     next: string;
     previous: string;
-    search: string;
-    filter: string;
-    startLearning: string;
-    viewAll: string;
-    more: string;
-    less: string;
+    search?: string;
+    filter?: string;
+    startLearning?: string;
+    viewAll?: string;
+    more?: string;
+    less?: string;
   };
   
   // Home page
@@ -44,9 +44,9 @@ export interface Translations {
     title: string;
     subtitle: string;
     getStarted: string;
-    heroDescription: string;
+    heroDescription?: string;
     features: {
-      title: string;
+      title?: string;
       aiGenerated: string;
       aiGeneratedDesc: string;
       immersiveReading: string;
@@ -54,7 +54,7 @@ export interface Translations {
       vocabularyTracking: string;
       vocabularyTrackingDesc: string;
     };
-    stats: {
+    stats?: {
       users: string;
       vocabulary: string;
       stories: string;
@@ -63,7 +63,7 @@ export interface Translations {
   };
   
   // Learn page
-  learn: {
+  learn?: {
     title: string;
     subtitle: string;
     quickStart: string;
@@ -81,7 +81,7 @@ export interface Translations {
   };
   
   // Library page
-  library: {
+  library?: {
     title: string;
     subtitle: string;
     searchPlaceholder: string;
@@ -101,7 +101,7 @@ export interface Translations {
   };
   
   // Progress page
-  progress: {
+  progress?: {
     title: string;
     subtitle: string;
     overview: string;
@@ -118,7 +118,7 @@ export interface Translations {
   };
   
   // Profile page
-  profile: {
+  profile?: {
     title: string;
     settings: string;
     personalInfo: string;
@@ -133,7 +133,7 @@ export interface Translations {
   };
   
   // Auth pages
-  auth: {
+  auth?: {
     login: {
       title: string;
       subtitle: string;
@@ -166,7 +166,7 @@ export interface Translations {
   };
   
   // Time and dates
-  time: {
+  time?: {
     today: string;
     yesterday: string;
     thisWeek: string;
@@ -179,7 +179,7 @@ export interface Translations {
   };
   
   // Difficulty levels
-  difficulty: {
+  difficulty?: {
     beginner: string;
     intermediate: string;
     advanced: string;

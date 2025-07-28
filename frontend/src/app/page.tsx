@@ -50,9 +50,11 @@ export default function Home() {
           <p className="mt-4 max-w-sm mx-auto text-base text-gray-500 sm:text-lg sm:max-w-md md:mt-5 md:text-xl md:max-w-3xl text-responsive">
             {t.home.subtitle}
           </p>
-          <p className="mt-3 max-w-2xl mx-auto text-sm text-gray-400 sm:text-base">
-            {t.home.heroDescription}
-          </p>
+          {t.home.heroDescription && (
+            <p className="mt-3 max-w-2xl mx-auto text-sm text-gray-400 sm:text-base">
+              {t.home.heroDescription}
+            </p>
+          )}
           
           <div className="mt-6 max-w-md mx-auto sm:flex sm:justify-center md:mt-8 space-y-3 sm:space-y-0 sm:space-x-3">
             <div className="rounded-md shadow">
@@ -78,7 +80,7 @@ export default function Home() {
         <div className="mt-12 sm:mt-16">
           <div className="text-center mb-8">
             <h3 className="text-2xl sm:text-3xl font-bold text-gray-900">
-              {t.home.features.title}
+              {t.home.features.title || 'Features'}
             </h3>
           </div>
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 sm:gap-8">

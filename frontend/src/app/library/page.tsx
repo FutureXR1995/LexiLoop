@@ -197,8 +197,8 @@ const VocabularyLibraryPage: React.FC = () => {
           <div className="flex items-center">
             <BookOpen className="h-8 w-8 text-indigo-600 mr-3" />
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">{t.library.title}</h1>
-              <p className="text-sm text-gray-600">{t.library.subtitle}</p>
+              <h1 className="text-2xl font-bold text-gray-900">{t.library?.title || 'Vocabulary Library'}</h1>
+              <p className="text-sm text-gray-600">{t.library?.subtitle || 'Discover and manage your vocabulary collections'}</p>
             </div>
           </div>
           <button
@@ -206,7 +206,7 @@ const VocabularyLibraryPage: React.FC = () => {
             className="flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
           >
             <Plus className="h-4 w-4 mr-2" />
-            {t.library.createCollection}
+            {t.library?.createCollection || 'Create Collection'}
           </button>
         </div>
 
@@ -218,7 +218,7 @@ const VocabularyLibraryPage: React.FC = () => {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
               <input
                 type="text"
-                placeholder={t.library.searchPlaceholder}
+                placeholder={t.library?.searchPlaceholder || 'Search collections...'}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
