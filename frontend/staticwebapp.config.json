@@ -33,9 +33,6 @@
   "responseOverrides": {
     "404": {
       "rewrite": "/404.html"
-    },
-    "500": {
-      "rewrite": "/500.html"
     }
   }
 }
