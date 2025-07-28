@@ -1,0 +1,14 @@
+{
+  "name": "lexiloop-api",
+  "version": "1.0.0",
+  "description": "Azure Functions for LexiLoop",
+  "main": "index.js",
+  "scripts": {
+    "start": "func start",
+    "test": "echo \"No tests specified\""
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "azure-functions-core-tools": "^4"
+  }
+}
