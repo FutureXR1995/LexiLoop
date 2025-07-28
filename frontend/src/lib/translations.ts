@@ -492,9 +492,9 @@ export function useTranslations(locale: Locale): Translations {
   return translations[locale] || translations['en-US'];
 }
 
-// Get translation for specific key
+// Get translation for specific key (non-hook utility function)
 export function getTranslation(locale: Locale, key: string): string {
-  const t = useTranslations(locale);
+  const t = translations[locale] || translations['en-US'];
   const keys = key.split('.');
   let value: any = t;
   
