@@ -4,7 +4,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { db, checkDatabaseConnection } from '@/lib/prisma';
+import { db, checkDatabaseConnection, prisma } from '@/lib/prisma';
 
 export async function GET(request: NextRequest) {
   try {
@@ -138,21 +138,11 @@ export async function PUT(request: NextRequest) {
     }
 
     // Update collection
-    const updatedCollection = await prisma.vocabularyCollection.update({
-      where: { id: collectionId },
-      data: {
-        title,
-        description,
-        category,
-        level,
-        isPublic
-      },
-      include: {
-        words: true,
-        user: {
-          select: { id: true, name: true, username: true }
-        }
-      }
+    const updatedCollection = await db.vocabulary.updateCollection(collectionId, {
+      title,
+      description,
+      category,
+      level
     });
 
     return NextResponse.json({

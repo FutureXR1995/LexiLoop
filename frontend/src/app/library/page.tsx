@@ -49,67 +49,51 @@ const VocabularyLibraryPage: React.FC = () => {
         // 模拟API调用
         const mockCollections: VocabularyCollection[] = [
           {
-            id: 'toefl_core',
-            name: 'TOEFL Core Vocabulary',
-            description: 'Essential vocabulary words for TOEFL preparation',
-            category: 'Academic English',
+            id: '1',
+            name: 'Business English Essentials',
+            description: 'Essential vocabulary for professional business communication',
+            category: 'Business',
             difficulty: 'intermediate',
             words: [],
             isPublic: true,
-            createdBy: 'system',
+            createdBy: 'Admin',
             createdAt: '2024-01-15',
             stats: {
-              totalWords: 1500,
-              averageDifficulty: 2.3,
-              completionRate: 45
+              totalWords: 150,
+              averageDifficulty: 3.2,
+              completionRate: 75
             }
           },
           {
-            id: 'gre_advanced',
-            name: 'GRE Advanced Vocabulary',
-            description: 'High-level vocabulary for GRE test preparation',
-            category: 'Graduate English',
-            difficulty: 'advanced',
-            words: [],
-            isPublic: true,
-            createdBy: 'system',
-            createdAt: '2024-01-10',
-            stats: {
-              totalWords: 2000,
-              averageDifficulty: 3.0,
-              completionRate: 23
-            }
-          },
-          {
-            id: 'business_english',
-            name: 'Business English Essentials',
-            description: 'Key vocabulary for professional business communication',
-            category: 'Business English',
-            difficulty: 'intermediate',
-            words: [],
-            isPublic: true,
-            createdBy: 'system',
-            createdAt: '2024-01-20',
-            stats: {
-              totalWords: 800,
-              averageDifficulty: 2.0,
-              completionRate: 67
-            }
-          },
-          {
-            id: 'daily_conversation',
-            name: 'Daily Conversation',
-            description: 'Common words and phrases for everyday communication',
-            category: 'General English',
+            id: '2',
+            name: 'Daily Conversation Starters',
+            description: 'Common phrases and words for everyday conversations',
+            category: 'Conversation',
             difficulty: 'beginner',
             words: [],
             isPublic: true,
-            createdBy: 'system',
-            createdAt: '2024-01-25',
+            createdBy: 'Teacher Sarah',
+            createdAt: '2024-01-10',
             stats: {
-              totalWords: 600,
-              averageDifficulty: 1.5,
-              completionRate: 89
+              totalWords: 120,
+              averageDifficulty: 2.1,
+              completionRate: 92
+            }
+          },
+          {
+            id: '3',
+            name: 'Academic Writing Vocabulary',
+            description: 'Advanced vocabulary for academic and research writing',
+            category: 'Academic',
+            difficulty: 'advanced',
+            words: [],
+            isPublic: true,
+            createdBy: 'Dr. Johnson',
+            createdAt: '2024-01-05',
+            stats: {
+              totalWords: 200,
+              averageDifficulty: 4.5,
+              completionRate: 45
             }
           }
         ];
@@ -117,12 +101,13 @@ const VocabularyLibraryPage: React.FC = () => {
         setCollections(mockCollections);
         setFilteredCollections(mockCollections);
         
+        // Extract unique categories
         const uniqueCategories = Array.from(new Set(mockCollections.map(c => c.category)));
         setCategories(uniqueCategories);
         
         setLoading(false);
       } catch (error) {
-        console.error('Error fetching collections:', error);
+        console.error('Failed to fetch collections:', error);
         setLoading(false);
       }
     };
@@ -130,22 +115,24 @@ const VocabularyLibraryPage: React.FC = () => {
     fetchData();
   }, []);
 
-  // 过滤和搜索
+  // 过滤功能
   useEffect(() => {
     let filtered = collections;
 
+    // 搜索过滤
     if (searchQuery) {
       filtered = filtered.filter(collection =>
         collection.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        collection.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        collection.category.toLowerCase().includes(searchQuery.toLowerCase())
+        collection.description.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
 
+    // 分类过滤
     if (selectedCategory !== 'all') {
       filtered = filtered.filter(collection => collection.category === selectedCategory);
     }
 
+    // 难度过滤
     if (selectedDifficulty !== 'all') {
       filtered = filtered.filter(collection => collection.difficulty === selectedDifficulty);
     }
@@ -155,10 +142,10 @@ const VocabularyLibraryPage: React.FC = () => {
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
-      case 'beginner': return 'text-green-600 bg-green-100';
-      case 'intermediate': return 'text-yellow-600 bg-yellow-100';
-      case 'advanced': return 'text-red-600 bg-red-100';
-      default: return 'text-gray-600 bg-gray-100';
+      case 'beginner': return 'bg-green-100 text-green-800';
+      case 'intermediate': return 'bg-yellow-100 text-yellow-800';
+      case 'advanced': return 'bg-red-100 text-red-800';
+      default: return 'bg-gray-100 text-gray-800';
     }
   };
 
@@ -201,6 +188,7 @@ const VocabularyLibraryPage: React.FC = () => {
             Create Collection
           </button>
         </div>
+
         {/* Search and Filters */}
         <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
           <div className="flex flex-col lg:flex-row gap-4">
@@ -243,102 +231,77 @@ const VocabularyLibraryPage: React.FC = () => {
                 <option value="advanced">Advanced</option>
               </select>
             </div>
+
+            <button className="lg:w-auto w-full px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors flex items-center justify-center">
+              <Filter className="h-4 w-4 mr-2" />
+              More Filters
+            </button>
           </div>
         </div>
 
         {/* Collections Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredCollections.map(collection => (
-            <div key={collection.id} className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow">
-              <div className="p-6">
-                {/* Header */}
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex-1">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-1">
-                      {collection.name}
-                    </h3>
-                    <p className="text-sm text-gray-600 mb-2">
-                      {collection.description}
-                    </p>
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs text-gray-500">{collection.category}</span>
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${getDifficultyColor(collection.difficulty)}`}>
-                        {collection.difficulty}
-                      </span>
-                    </div>
-                  </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+          {filteredCollections.map((collection) => (
+            <div key={collection.id} className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 p-6">
+              <div className="flex justify-between items-start mb-4">
+                <div className="flex-1">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">{collection.name}</h3>
+                  <p className="text-sm text-gray-600 mb-3 line-clamp-2">{collection.description}</p>
                 </div>
+                <span className={`px-2 py-1 rounded-full text-xs font-medium ${getDifficultyColor(collection.difficulty)}`}>
+                  {collection.difficulty}
+                </span>
+              </div>
 
-                {/* Stats */}
-                <div className="space-y-3 mb-4">
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-600">Words</span>
-                    <span className="font-medium">{collection.stats.totalWords}</span>
-                  </div>
-                  
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-600">Progress</span>
-                    <span className="font-medium">{collection.stats.completionRate}%</span>
-                  </div>
-                  
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div
-                      className={`h-2 rounded-full ${getProgressColor(collection.stats.completionRate)}`}
-                      style={{ width: `${collection.stats.completionRate}%` }}
-                    ></div>
-                  </div>
+              {/* Stats */}
+              <div className="grid grid-cols-2 gap-4 mb-4 text-sm">
+                <div className="flex items-center text-gray-600">
+                  <BookOpen className="h-4 w-4 mr-1" />
+                  {collection.stats.totalWords} words
                 </div>
+                <div className="flex items-center text-gray-600">
+                  <Users className="h-4 w-4 mr-1" />
+                  {collection.isPublic ? 'Public' : 'Private'}
+                </div>
+              </div>
 
-                {/* Actions */}
-                <div className="flex gap-2">
-                  <button className="flex-1 bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition-colors text-sm font-medium">
-                    Start Learning
-                  </button>
-                  <button className="px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
-                    <BookOpen className="h-4 w-4" />
-                  </button>
+              {/* Progress Bar */}
+              <div className="mb-4">
+                <div className="flex justify-between items-center mb-1">
+                  <span className="text-xs text-gray-600">Progress</span>
+                  <span className="text-xs text-gray-600">{collection.stats.completionRate}%</span>
                 </div>
+                <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div 
+                    className={`h-2 rounded-full ${getProgressColor(collection.stats.completionRate)}`}
+                    style={{ width: `${collection.stats.completionRate}%` }}
+                  ></div>
+                </div>
+              </div>
 
-                {/* Footer */}
-                <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-100">
-                  <div className="flex items-center text-xs text-gray-500">
-                    <Users className="h-3 w-3 mr-1" />
-                    {collection.isPublic ? 'Public' : 'Private'}
-                  </div>
-                  <div className="text-xs text-gray-500">
-                    {new Date(collection.createdAt).toLocaleDateString()}
-                  </div>
-                </div>
+              {/* Meta Info */}
+              <div className="flex justify-between items-center text-xs text-gray-500 mb-4">
+                <span>By {collection.createdBy}</span>
+                <span>{collection.createdAt}</span>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex gap-2">
+                <button className="flex-1 bg-indigo-600 text-white py-2 px-3 rounded-lg hover:bg-indigo-700 transition-colors text-sm">
+                  Start Learning
+                </button>
+                <button className="px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                  <BookOpen className="h-4 w-4" />
+                </button>
               </div>
             </div>
           ))}
         </div>
 
-        {filteredCollections.length === 0 && (
-          <div className="text-center py-12">
-            <BookOpen className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No collections found</h3>
-            <p className="text-gray-600 mb-4">
-              {searchQuery || selectedCategory !== 'all' || selectedDifficulty !== 'all'
-                ? 'Try adjusting your search filters.'
-                : 'Create your first vocabulary collection to get started.'
-              }
-            </p>
-            <button
-              onClick={() => setShowCreateModal(true)}
-              className="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
-            >
-              <Plus className="h-4 w-4 mr-2" />
-              Create Collection
-            </button>
-          </div>
-        )}
-      </main>
-
-      {/* Quick Stats Bar */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-6 text-sm text-gray-600">
+        {/* Summary Statistics */}
+        <div className="bg-white rounded-lg shadow-sm p-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Library Statistics</h3>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
             <div className="flex items-center">
               <BookOpen className="h-4 w-4 mr-1" />
               {collections.length} Collections

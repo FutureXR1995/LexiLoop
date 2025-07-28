@@ -80,9 +80,7 @@ export async function POST(request: NextRequest) {
 
     // Check username uniqueness if provided
     if (username) {
-      const existingUsername = await prisma.user.findUnique({
-        where: { username }
-      });
+      const existingUsername = await db.user.findByUsername(username);
       if (existingUsername) {
         return NextResponse.json(
           { error: 'Username is already taken' },
@@ -148,7 +146,7 @@ export async function POST(request: NextRequest) {
         pronunciation: '/ˈwelkəm/',
         partOfSpeech: 'verb',
         examples: ['Welcome to our English learning platform!', 'We welcome new students every day.'],
-        difficulty: 'BEGINNER'
+        difficulty: 'BEGINNER' as const
       },
       {
         word: 'learn',
@@ -156,7 +154,7 @@ export async function POST(request: NextRequest) {
         pronunciation: '/lɜːrn/',
         partOfSpeech: 'verb',
         examples: ['I want to learn English vocabulary.', 'Children learn quickly when they have fun.'],
-        difficulty: 'BEGINNER'
+        difficulty: 'BEGINNER' as const
       },
       {
         word: 'vocabulary',
@@ -164,7 +162,7 @@ export async function POST(request: NextRequest) {
         pronunciation: '/vəˈkæbjələri/',
         partOfSpeech: 'noun',
         examples: ['Building vocabulary is essential for language learning.', 'She has an extensive vocabulary in three languages.'],
-        difficulty: 'INTERMEDIATE'
+        difficulty: 'INTERMEDIATE' as const
       }
     ];
 

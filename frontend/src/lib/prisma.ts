@@ -72,6 +72,19 @@ export const db = {
       });
     },
 
+    async findByUsername(username: string) {
+      return prisma.user.findUnique({
+        where: { username },
+        include: {
+          vocabularyCollections: true,
+          learningProgress: {
+            orderBy: { date: 'desc' },
+            take: 30
+          }
+        }
+      });
+    },
+
     async create(data: {
       email: string;
       hashedPassword: string;
@@ -90,7 +103,7 @@ export const db = {
       name?: string;
       username?: string;
       preferredLanguage?: string;
-      learningLevel?: string;
+      learningLevel?: 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED';
     }) {
       return prisma.user.update({
         where: { id },
@@ -147,7 +160,7 @@ export const db = {
       title: string;
       description?: string;
       category?: string;
-      level: string;
+      level: 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED';
       userId: string;
       isPublic?: boolean;
     }) {
@@ -163,7 +176,7 @@ export const db = {
       pronunciation?: string;
       partOfSpeech?: string;
       examples?: string[];
-      difficulty?: string;
+      difficulty?: 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED';
     }>) {
       return prisma.word.createMany({
         data: words.map(word => ({
@@ -182,6 +195,20 @@ export const db = {
           userWords: true
         },
         orderBy: { createdAt: 'asc' }
+      });
+    },
+
+    async updateCollection(collectionId: string, data: {
+      title?: string;
+      description?: string;
+      category?: string;
+      level?: 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED';
+      wordCount?: number;
+    }) {
+      return prisma.vocabularyCollection.update({
+        where: { id: collectionId },
+        data,
+        include: { words: true }
       });
     }
   },
@@ -287,8 +314,8 @@ export const db = {
   test: {
     async createSession(data: {
       userId: string;
-      type: string;
-      difficulty: string;
+      type: 'VOCABULARY' | 'COMPREHENSION' | 'PRONUNCIATION' | 'MIXED';
+      difficulty: 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED';
       totalQuestions: number;
       storyId?: string;
     }) {
@@ -299,7 +326,7 @@ export const db = {
     },
 
     async addQuestion(sessionId: string, data: {
-      type: string;
+      type: 'MULTIPLE_CHOICE' | 'FILL_BLANK' | 'PRONUNCIATION' | 'DEFINITION' | 'USAGE';
       question: string;
       options: string[];
       correctAnswer: string;
@@ -363,7 +390,7 @@ export const db = {
     async recordError(data: {
       userId: string;
       wordId: string;
-      questionType: string;
+      questionType: 'MULTIPLE_CHOICE' | 'FILL_BLANK' | 'PRONUNCIATION' | 'DEFINITION' | 'USAGE';
       userAnswer: string;
       correctAnswer: string;
       errorReason?: string;
