@@ -41,7 +41,7 @@ export default function TestSpeechPage() {
 
     setLoading(true);
     try {
-      const response = await fetch('/api/speech-synthesize', {
+      const response = await fetch('/api/speech/synthesize', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

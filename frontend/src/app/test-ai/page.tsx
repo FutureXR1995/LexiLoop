@@ -12,7 +12,7 @@ export default function TestAIPage() {
   const testStoryGeneration = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/ai-generate-story', {
+      const response = await fetch('/api/ai/generate-story', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -40,7 +40,7 @@ export default function TestAIPage() {
   const testVocabularyGeneration = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/ai-generate-vocabulary', {
+      const response = await fetch('/api/ai/generate-vocabulary', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
