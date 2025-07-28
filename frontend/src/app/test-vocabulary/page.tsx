@@ -89,7 +89,7 @@ export default function TestVocabularyPage() {
   const testDatabaseConnection = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/vocabulary/collections');
+      const response = await fetch('/api/vocabulary-collections');
       const data = await response.json();
       setTestResults(`数据库连接状态: ${response.ok ? '✅ 成功' : '❌ 失败'}\n响应: ${JSON.stringify(data, null, 2)}`);
       if (response.ok && data.collections) {
@@ -104,7 +104,7 @@ export default function TestVocabularyPage() {
   const testCreateCollection = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/vocabulary/collections', {
+      const response = await fetch('/api/vocabulary-collections', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -135,7 +135,7 @@ export default function TestVocabularyPage() {
     setLoading(true);
     try {
       // 首先创建一个示例集合
-      const collectionResponse = await fetch('/api/vocabulary/collections', {
+      const collectionResponse = await fetch('/api/vocabulary-collections', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -156,7 +156,7 @@ export default function TestVocabularyPage() {
       const collection = await collectionResponse.json();
       
       // 然后添加示例词汇
-      const wordsResponse = await fetch('/api/vocabulary/words', {
+      const wordsResponse = await fetch('/api/vocabulary-words', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -58,10 +58,10 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: "upload"
           app_location: "frontend"
-          api_location: "frontend/src/app/api"
+          api_location: "frontend/api"
           output_location: "out"
           app_build_command: "npm run build"
-          api_build_command: "npm run build"
+          api_build_command: ""
 
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
