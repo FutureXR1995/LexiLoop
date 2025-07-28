@@ -46,8 +46,8 @@ APP_INSIGHTS_NAME="lexiloop-jp-insights-${RANDOM_SUFFIX}"
 CDN_PROFILE_NAME="lexiloop-japan-cdn-${RANDOM_SUFFIX}"
 
 # API 密钥配置 (使用现有密钥)
-CLAUDE_API_KEY="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"
-AZURE_SPEECH_KEY="ee9dKLY1XRCaGagb2pM8gBKOCXpbRHja6paIVBdbEIXq8bcOvGbrJQQJ99BGACYeBjFXJ3w3AAAYACOGiAEC"
+CLAUDE_API_KEY="[您的Claude API密钥]"
+AZURE_SPEECH_KEY="[您的Azure Speech API密钥]"
 NEXTAUTH_SECRET="1OsE+l6lRe3b+hOyC64AECYIiwKf3SM8bJoHjv+voMs="
 
 echo -e "${BLUE}📋 使用以下日本优化配置：${NC}"

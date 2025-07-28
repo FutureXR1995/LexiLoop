@@ -102,13 +102,13 @@ az keyvault create \
 az keyvault secret set \
   --vault-name lexiloop-jp-vault \
   --name "Claude-API-Key" \
-  --value "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"
+  --value "[您的Claude API密钥]"
 
 # Azure Speech 密钥
 az keyvault secret set \
   --vault-name lexiloop-jp-vault \
   --name "Azure-Speech-Key" \
-  --value "ee9dKLY1XRCaGagb2pM8gBKOCXpbRHja6paIVBdbEIXq8bcOvGbrJQQJ99BGACYeBjFXJ3w3AAAYACOGiAEC"
+  --value "[您的Azure Speech API密钥]"
 
 # NextAuth 密钥
 az keyvault secret set \
@@ -137,9 +137,9 @@ NEXTAUTH_SECRET=1OsE+l6lRe3b+hOyC64AECYIiwKf3SM8bJoHjv+voMs=
 
 NEXTAUTH_URL=https://lexiloop-japan.azurestaticapps.net
 
-CLAUDE_API_KEY=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
+CLAUDE_API_KEY=[您的Claude API密钥]
 
-AZURE_SPEECH_KEY=ee9dKLY1XRCaGagb2pM8gBKOCXpbRHja6paIVBdbEIXq8bcOvGbrJQQJ99BGACYeBjFXJ3w3AAAYACOGiAEC
+AZURE_SPEECH_KEY=[您的Azure Speech API密钥]
 
 AZURE_SPEECH_REGION=japaneast
 
