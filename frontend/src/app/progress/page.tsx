@@ -7,6 +7,7 @@
 
 import { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
+import PageLayout, { PageContainer } from '@/components/PageLayout';
 
 interface ProgressData {
   totalWordsLearned: number;
@@ -81,40 +82,26 @@ export default function ProgressPage() {
 
   if (!progress) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin text-4xl mb-4">📊</div>
-          <p>Loading your progress...</p>
+      <PageLayout>
+        <div className="flex items-center justify-center py-20">
+          <div className="text-center">
+            <div className="animate-spin text-4xl mb-4">📊</div>
+            <p>Loading your progress...</p>
+          </div>
         </div>
-      </div>
+      </PageLayout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-4">
-            <div>
-              <h1 className="text-2xl font-bold text-indigo-600">
-                📊 Your Progress
-              </h1>
-              <p className="text-gray-600">Track your vocabulary learning journey</p>
-            </div>
-            <nav className="flex space-x-4">
-              <a href="/learn" className="text-indigo-600 hover:underline">
-                Continue Learning
-              </a>
-              <a href="/" className="text-gray-600 hover:text-indigo-600">
-                Home
-              </a>
-            </nav>
-          </div>
+    <PageLayout>
+      <PageContainer className="space-y-8">
+        <div>
+          <h1 className="text-2xl font-bold text-indigo-600">
+            📊 Your Progress
+          </h1>
+          <p className="text-gray-600">Track your vocabulary learning journey</p>
         </div>
-      </header>
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
         {/* Overview Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <Card>
@@ -387,7 +374,7 @@ export default function ProgressPage() {
             </CardContent>
           </Card>
         </div>
-      </div>
-    </div>
+      </PageContainer>
+    </PageLayout>
   );
 }

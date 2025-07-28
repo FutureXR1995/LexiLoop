@@ -4,50 +4,12 @@
  */
 
 import Link from 'next/link';
+import Header from '@/components/Header';
 
 export default function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 pb-20 md:pb-0">
-      {/* Header */}
-      <header className="bg-white shadow-sm safe-area-top">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-4">
-            <div className="flex items-center">
-              <h1 className="text-xl sm:text-2xl font-bold text-indigo-600">LexiLoop</h1>
-              <span className="ml-2 text-xs sm:text-sm text-gray-500">v0.1.0</span>
-            </div>
-            
-            {/* Mobile Menu - Hidden on mobile, simplified navigation */}
-            <nav className="hidden sm:flex space-x-2 lg:space-x-4">
-              <Link href="/learn" className="text-gray-600 hover:text-indigo-600 text-sm lg:text-base touch-optimized">
-                Learn
-              </Link>
-              <Link href="/library" className="text-gray-600 hover:text-indigo-600 text-sm lg:text-base touch-optimized">
-                Library
-              </Link>
-              <Link href="/progress" className="text-gray-600 hover:text-indigo-600 text-sm lg:text-base touch-optimized">
-                Progress
-              </Link>
-              <Link href="/advanced-test" className="hidden lg:block text-gray-600 hover:text-indigo-600 text-sm lg:text-base touch-optimized">
-                Advanced Tests
-              </Link>
-              <Link href="/social" className="hidden lg:block text-gray-600 hover:text-indigo-600 text-sm lg:text-base touch-optimized">
-                Social
-              </Link>
-              <Link href="/auth/login" className="bg-indigo-600 text-white px-3 py-1.5 lg:px-4 lg:py-2 rounded-lg hover:bg-indigo-700 text-sm lg:text-base touch-optimized">
-                Login
-              </Link>
-            </nav>
-            
-            {/* Mobile CTA */}
-            <div className="sm:hidden">
-              <Link href="/learn" className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 text-sm font-medium touch-optimized">
-                Start
-              </Link>
-            </div>
-          </div>
-        </div>
-      </header>
+      <Header />
 
       {/* Hero Section */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 safe-area-left safe-area-right">

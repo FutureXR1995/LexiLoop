@@ -7,6 +7,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import PageLayout, { PageContainer } from '@/components/PageLayout';
 
 interface VocabularyWord {
   id: string;
@@ -86,27 +87,8 @@ export default function LearnPage() {
   });
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-4">
-            <Link href="/" className="text-2xl font-bold text-indigo-600">
-              LexiLoop
-            </Link>
-            <nav className="flex space-x-4">
-              <Link href="/progress" className="text-gray-600 hover:text-indigo-600">
-                Progress
-              </Link>
-              <Link href="/word-books" className="text-gray-600 hover:text-indigo-600">
-                Word Books
-              </Link>
-            </nav>
-          </div>
-        </div>
-      </header>
-
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <PageLayout>
+      <PageContainer className="max-w-6xl">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Left Panel - Word Selection */}
           <div className="bg-white rounded-lg shadow-md p-6">
@@ -304,7 +286,7 @@ export default function LearnPage() {
             )}
           </div>
         </div>
-      </div>
-    </div>
+      </PageContainer>
+    </PageLayout>
   );
 }

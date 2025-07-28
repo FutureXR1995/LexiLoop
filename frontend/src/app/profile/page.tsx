@@ -16,6 +16,7 @@ import { useAuthState } from '@/hooks/useAuth';
 import { User } from '@/lib/api';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/Tabs';
 import { Settings, User as UserIcon, Shield, Brain, BarChart3 } from 'lucide-react';
+import PageLayout, { PageContainer } from '@/components/PageLayout';
 
 export default function ProfilePage() {
   const { user, updateProfile, isLoading } = useAuthState();
@@ -53,48 +54,51 @@ export default function ProfilePage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 flex items-center justify-center">
-        <div className="text-center space-y-4">
-          <div className="w-12 h-12 mx-auto">
-            <div className="w-full h-full border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
-          </div>
-          <div className="space-y-2">
-            <h2 className="text-xl font-semibold text-gray-900">Loading Profile</h2>
-            <p className="text-sm text-gray-600">Fetching your account information...</p>
+      <PageLayout>
+        <div className="flex items-center justify-center py-20">
+          <div className="text-center space-y-4">
+            <div className="w-12 h-12 mx-auto">
+              <div className="w-full h-full border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
+            </div>
+            <div className="space-y-2">
+              <h2 className="text-xl font-semibold text-gray-900">Loading Profile</h2>
+              <p className="text-sm text-gray-600">Fetching your account information...</p>
+            </div>
           </div>
         </div>
-      </div>
+      </PageLayout>
     );
   }
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-pink-50 flex items-center justify-center">
-        <div className="text-center space-y-4 p-8">
-          <div className="w-16 h-16 mx-auto bg-red-100 rounded-full flex items-center justify-center">
-            <Shield className="w-8 h-8 text-red-600" />
-          </div>
-          <div className="space-y-2">
-            <h2 className="text-xl font-semibold text-gray-900">Authentication Required</h2>
-            <p className="text-sm text-gray-600">Please log in to access your profile settings.</p>
-            <a 
-              href="/auth/login" 
-              className="inline-block mt-4 px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
-            >
-              Go to Login
-            </a>
+      <PageLayout>
+        <div className="flex items-center justify-center py-20">
+          <div className="text-center space-y-4 p-8">
+            <div className="w-16 h-16 mx-auto bg-red-100 rounded-full flex items-center justify-center">
+              <Shield className="w-8 h-8 text-red-600" />
+            </div>
+            <div className="space-y-2">
+              <h2 className="text-xl font-semibold text-gray-900">Authentication Required</h2>
+              <p className="text-sm text-gray-600">Please log in to access your profile settings.</p>
+              <a 
+                href="/auth/login" 
+                className="inline-block mt-4 px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+              >
+                Go to Login
+              </a>
+            </div>
           </div>
         </div>
-      </div>
+      </PageLayout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
-      {/* Navigation Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between py-4">
+    <PageLayout>
+      <PageContainer>
+        <div className="mb-6">
+          <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <button
                 onClick={() => window.history.back()}
@@ -116,9 +120,7 @@ export default function ProfilePage() {
             </div>
           </div>
         </div>
-      </header>
-
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
         <ResponsiveContainer maxWidth="max-w-6xl">
           <div className="space-y-8">
             {/* Profile Header */}
@@ -245,7 +247,7 @@ export default function ProfilePage() {
             </Tabs>
           </div>
         </ResponsiveContainer>
-      </main>
-    </div>
+      </PageContainer>
+    </PageLayout>
   );
 }
