@@ -38,10 +38,13 @@ export default function LanguageSwitcher({
     saveLocalePreference(locale);
     setIsOpen(false);
     
-    // Reload page with new locale
+    // Trigger re-render by dispatching custom event
+    window.dispatchEvent(new CustomEvent('localeChange', { detail: locale }));
+    
+    // Also update URL parameter
     const url = new URL(window.location.href);
     url.searchParams.set('lang', locale);
-    window.location.href = url.toString();
+    window.history.replaceState({}, '', url.toString());
   };
 
   if (variant === 'compact') {
@@ -148,10 +151,13 @@ export function MobileLanguageSwitcher() {
     saveLocalePreference(locale);
     setIsOpen(false);
     
-    // Reload page with new locale
+    // Trigger re-render by dispatching custom event
+    window.dispatchEvent(new CustomEvent('localeChange', { detail: locale }));
+    
+    // Also update URL parameter
     const url = new URL(window.location.href);
     url.searchParams.set('lang', locale);
-    window.location.href = url.toString();
+    window.history.replaceState({}, '', url.toString());
   };
 
   return (
