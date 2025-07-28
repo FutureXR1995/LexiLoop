@@ -3,10 +3,40 @@
  * Main landing page for the vocabulary learning platform
  */
 
+'use client';
+
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Header from '@/components/Header';
+import { detectLocale, type Locale } from '@/lib/i18n';
+import { useTranslations } from '@/lib/translations';
 
 export default function Home() {
+  const [currentLocale, setCurrentLocale] = useState<Locale>('zh-CN');
+  const [mounted, setMounted] = useState(false);
+  
+  useEffect(() => {
+    const detected = detectLocale();
+    setCurrentLocale(detected);
+    setMounted(true);
+    
+    // Listen for locale changes
+    const handleLocaleChange = (event: CustomEvent) => {
+      setCurrentLocale(event.detail);
+    };
+    
+    window.addEventListener('localeChange', handleLocaleChange as EventListener);
+    
+    return () => {
+      window.removeEventListener('localeChange', handleLocaleChange as EventListener);
+    };
+  }, []);
+  
+  const t = useTranslations(currentLocale);
+  
+  if (!mounted) {
+    return null; // Prevent hydration mismatch
+  }
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 pb-20 md:pb-0">
       <Header />
@@ -15,11 +45,13 @@ export default function Home() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 safe-area-left safe-area-right">
         <div className="text-center">
           <h2 className="text-3xl font-extrabold text-gray-900 sm:text-4xl md:text-5xl lg:text-6xl heading-responsive">
-            Learn Vocabulary Through
-            <span className="text-indigo-600 block sm:inline"> AI Stories</span>
+            {t.home.title}
           </h2>
           <p className="mt-4 max-w-sm mx-auto text-base text-gray-500 sm:text-lg sm:max-w-md md:mt-5 md:text-xl md:max-w-3xl text-responsive">
-            Master new words naturally with AI-generated stories that create meaningful contexts for every vocabulary word you learn.
+            {t.home.subtitle}
+          </p>
+          <p className="mt-3 max-w-2xl mx-auto text-sm text-gray-400 sm:text-base">
+            {t.home.heroDescription}
           </p>
           
           <div className="mt-6 max-w-md mx-auto sm:flex sm:justify-center md:mt-8 space-y-3 sm:space-y-0 sm:space-x-3">
@@ -28,7 +60,7 @@ export default function Home() {
                 href="/learn"
                 className="w-full flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 md:py-4 md:text-lg md:px-10 touch-optimized btn-mobile"
               >
-                Start Learning
+                {t.home.getStarted}
               </Link>
             </div>
             <div>
@@ -36,7 +68,7 @@ export default function Home() {
                 href="/demo"
                 className="w-full flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200 md:py-4 md:text-lg md:px-10 touch-optimized btn-mobile"
               >
-                View Demo
+                查看演示
               </Link>
             </div>
           </div>
@@ -44,16 +76,21 @@ export default function Home() {
 
         {/* Features Section */}
         <div className="mt-12 sm:mt-16">
+          <div className="text-center mb-8">
+            <h3 className="text-2xl sm:text-3xl font-bold text-gray-900">
+              {t.home.features.title}
+            </h3>
+          </div>
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 sm:gap-8">
             {/* Feature 1 */}
             <div className="bg-white rounded-lg shadow-md p-4 sm:p-6 card-mobile card-hover touch-optimized">
               <div className="text-center">
                 <div className="text-2xl sm:text-3xl mb-3 sm:mb-4">📖</div>
                 <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2">
-                  Immersive Reading
+                  {t.home.features.immersiveReading}
                 </h3>
                 <p className="text-sm sm:text-base text-gray-600 text-responsive">
-                  Enhanced reading experience with interactive vocabulary highlighting and TTS support
+                  {t.home.features.immersiveReadingDesc}
                 </p>
               </div>
             </div>
@@ -61,12 +98,12 @@ export default function Home() {
             {/* Feature 2 */}
             <div className="bg-white rounded-lg shadow-md p-4 sm:p-6 card-mobile card-hover touch-optimized">
               <div className="text-center">
-                <div className="text-2xl sm:text-3xl mb-3 sm:mb-4">🎯</div>
+                <div className="text-2xl sm:text-3xl mb-3 sm:mb-4">🤖</div>
                 <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2">
-                  Three-Layer Testing
+                  {t.home.features.aiGenerated}
                 </h3>
                 <p className="text-sm sm:text-base text-gray-600 text-responsive">
-                  Word meaning, typing practice, and comprehension tests ensure deep learning
+                  {t.home.features.aiGeneratedDesc}
                 </p>
               </div>
             </div>
@@ -74,12 +111,12 @@ export default function Home() {
             {/* Feature 3 */}
             <div className="bg-white rounded-lg shadow-md p-4 sm:p-6 card-mobile card-hover touch-optimized">
               <div className="text-center">
-                <div className="text-2xl sm:text-3xl mb-3 sm:mb-4">🔄</div>
+                <div className="text-2xl sm:text-3xl mb-3 sm:mb-4">📊</div>
                 <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2">
-                  Spaced Repetition
+                  {t.home.features.vocabularyTracking}
                 </h3>
                 <p className="text-sm sm:text-base text-gray-600 text-responsive">
-                  Smart algorithm brings back words you need to practice at optimal intervals
+                  {t.home.features.vocabularyTrackingDesc}
                 </p>
               </div>
             </div>

@@ -3,6 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import { BookOpen, Search, Filter, Plus, Users, TrendingUp, Clock, Star } from 'lucide-react';
 import PageLayout, { PageContainer } from '@/components/PageLayout';
+import { detectLocale, type Locale } from '@/lib/i18n';
+import { useTranslations } from '@/lib/translations';
 
 interface VocabularyWord {
   id: string;
@@ -41,6 +43,25 @@ const VocabularyLibraryPage: React.FC = () => {
   const [categories, setCategories] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [currentLocale, setCurrentLocale] = useState<Locale>('zh-CN');
+  
+  useEffect(() => {
+    const detected = detectLocale();
+    setCurrentLocale(detected);
+    
+    // Listen for locale changes
+    const handleLocaleChange = (event: CustomEvent) => {
+      setCurrentLocale(event.detail);
+    };
+    
+    window.addEventListener('localeChange', handleLocaleChange as EventListener);
+    
+    return () => {
+      window.removeEventListener('localeChange', handleLocaleChange as EventListener);
+    };
+  }, []);
+  
+  const t = useTranslations(currentLocale);
 
   // 模拟数据加载
   useEffect(() => {
@@ -162,7 +183,7 @@ const VocabularyLibraryPage: React.FC = () => {
         <div className="flex items-center justify-center py-20">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Loading vocabulary library...</p>
+            <p className="text-gray-600">{t.common.loading}</p>
           </div>
         </div>
       </PageLayout>
@@ -176,8 +197,8 @@ const VocabularyLibraryPage: React.FC = () => {
           <div className="flex items-center">
             <BookOpen className="h-8 w-8 text-indigo-600 mr-3" />
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Vocabulary Library</h1>
-              <p className="text-sm text-gray-600">Discover and manage your vocabulary collections</p>
+              <h1 className="text-2xl font-bold text-gray-900">{t.library.title}</h1>
+              <p className="text-sm text-gray-600">{t.library.subtitle}</p>
             </div>
           </div>
           <button
@@ -185,7 +206,7 @@ const VocabularyLibraryPage: React.FC = () => {
             className="flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
           >
             <Plus className="h-4 w-4 mr-2" />
-            Create Collection
+            {t.library.createCollection}
           </button>
         </div>
 
@@ -197,7 +218,7 @@ const VocabularyLibraryPage: React.FC = () => {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
               <input
                 type="text"
-                placeholder="Search collections..."
+                placeholder={t.library.searchPlaceholder}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"

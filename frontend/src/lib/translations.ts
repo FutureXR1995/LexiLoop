@@ -31,6 +31,12 @@ export interface Translations {
     back: string;
     next: string;
     previous: string;
+    search: string;
+    filter: string;
+    startLearning: string;
+    viewAll: string;
+    more: string;
+    less: string;
   };
   
   // Home page
@@ -38,7 +44,9 @@ export interface Translations {
     title: string;
     subtitle: string;
     getStarted: string;
+    heroDescription: string;
     features: {
+      title: string;
       aiGenerated: string;
       aiGeneratedDesc: string;
       immersiveReading: string;
@@ -46,12 +54,135 @@ export interface Translations {
       vocabularyTracking: string;
       vocabularyTrackingDesc: string;
     };
+    stats: {
+      users: string;
+      vocabulary: string;
+      stories: string;
+      languages: string;
+    };
+  };
+  
+  // Learn page
+  learn: {
+    title: string;
+    subtitle: string;
+    quickStart: string;
+    quickStartDesc: string;
+    storyMode: string;
+    storyModeDesc: string;
+    vocabularyMode: string;
+    vocabularyModeDesc: string;
+    practiceMode: string;
+    practiceModeDesc: string;
+    recentActivity: string;
+    continueReading: string;
+    startNewStory: string;
+    reviewVocabulary: string;
+  };
+  
+  // Library page
+  library: {
+    title: string;
+    subtitle: string;
+    searchPlaceholder: string;
+    allCategories: string;
+    allLevels: string;
+    moreFilters: string;
+    collections: string;
+    words: string;
+    avgProgress: string;
+    public: string;
+    private: string;
+    createdBy: string;
+    progress: string;
+    startLearning: string;
+    createCollection: string;
+    libraryStats: string;
+  };
+  
+  // Progress page
+  progress: {
+    title: string;
+    subtitle: string;
+    overview: string;
+    dailyGoal: string;
+    currentStreak: string;
+    totalWords: string;
+    masteredWords: string;
+    weeklyProgress: string;
+    recentAchievements: string;
+    studyTime: string;
+    accuracy: string;
+    viewAnalytics: string;
+    setGoals: string;
+  };
+  
+  // Profile page
+  profile: {
+    title: string;
+    settings: string;
+    personalInfo: string;
+    learningPreferences: string;
+    achievements: string;
+    statistics: string;
+    logout: string;
+    editProfile: string;
+    changePassword: string;
+    notifications: string;
+    privacy: string;
+  };
+  
+  // Auth pages
+  auth: {
+    login: {
+      title: string;
+      subtitle: string;
+      email: string;
+      password: string;
+      rememberMe: string;
+      forgotPassword: string;
+      loginButton: string;
+      noAccount: string;
+      signUp: string;
+    };
+    register: {
+      title: string;
+      subtitle: string;
+      name: string;
+      email: string;
+      password: string;
+      confirmPassword: string;
+      agreeTerms: string;
+      registerButton: string;
+      hasAccount: string;
+      signIn: string;
+    };
   };
   
   // Language selection
   language: {
     choose: string;
     current: string;
+  };
+  
+  // Time and dates
+  time: {
+    today: string;
+    yesterday: string;
+    thisWeek: string;
+    thisMonth: string;
+    minutes: string;
+    hours: string;
+    days: string;
+    weeks: string;
+    months: string;
+  };
+  
+  // Difficulty levels
+  difficulty: {
+    beginner: string;
+    intermediate: string;
+    advanced: string;
   };
 }
 
@@ -79,12 +210,20 @@ const translations: Record<Locale, Translations> = {
       back: '返回',
       next: '下一步',
       previous: '上一步',
+      search: '搜索',
+      filter: '筛选',
+      startLearning: '开始学习',
+      viewAll: '查看全部',
+      more: '更多',
+      less: '收起',
     },
     home: {
       title: 'LexiLoop - 智能词汇学习平台',
       subtitle: '通过AI生成的故事和沉浸式阅读体验来学习词汇',
       getStarted: '开始学习',
+      heroDescription: '利用人工智能技术，为您提供个性化的词汇学习体验。通过生动的故事和互动练习，让学习变得更有趣、更高效。',
       features: {
+        title: '核心功能',
         aiGenerated: 'AI生成故事',
         aiGeneratedDesc: '根据您的学习水平定制个性化故事',
         immersiveReading: '沉浸式阅读',
@@ -92,10 +231,119 @@ const translations: Record<Locale, Translations> = {
         vocabularyTracking: '词汇追踪',
         vocabularyTrackingDesc: '跟踪您的学习进度和掌握情况',
       },
+      stats: {
+        users: '活跃用户',
+        vocabulary: '词汇量',
+        stories: '故事数',
+        languages: '支持语言',
+      },
+    },
+    learn: {
+      title: '开始学习',
+      subtitle: '选择您喜欢的学习方式，开始词汇学习之旅',
+      quickStart: '快速开始',
+      quickStartDesc: '基于您的水平推荐最适合的学习内容',
+      storyMode: '故事模式',
+      storyModeDesc: '通过有趣的AI故事学习新词汇',
+      vocabularyMode: '词汇模式',
+      vocabularyModeDesc: '系统化学习词汇集合',
+      practiceMode: '练习模式',
+      practiceModeDesc: '巩固已学词汇，提高记忆效果',
+      recentActivity: '最近活动',
+      continueReading: '继续阅读',
+      startNewStory: '开始新故事',
+      reviewVocabulary: '复习词汇',
+    },
+    library: {
+      title: '词汇库',
+      subtitle: '发现和管理您的词汇集合',
+      searchPlaceholder: '搜索词汇集...',
+      allCategories: '所有分类',
+      allLevels: '所有难度',
+      moreFilters: '更多筛选',
+      collections: '词汇集',
+      words: '单词',
+      avgProgress: '平均进度',
+      public: '公开',
+      private: '私人',
+      createdBy: '创建者',
+      progress: '进度',
+      startLearning: '开始学习',
+      createCollection: '创建词汇集',
+      libraryStats: '词汇库统计',
+    },
+    progress: {
+      title: '学习进度',
+      subtitle: '跟踪您的学习成果和进步',
+      overview: '总览',
+      dailyGoal: '每日目标',
+      currentStreak: '连续学习',
+      totalWords: '总词汇量',
+      masteredWords: '已掌握词汇',
+      weeklyProgress: '本周进度',
+      recentAchievements: '最近成就',
+      studyTime: '学习时间',
+      accuracy: '准确率',
+      viewAnalytics: '查看分析',
+      setGoals: '设置目标',
+    },
+    profile: {
+      title: '个人资料',
+      settings: '设置',
+      personalInfo: '个人信息',
+      learningPreferences: '学习偏好',
+      achievements: '成就',
+      statistics: '统计数据',
+      logout: '退出登录',
+      editProfile: '编辑资料',
+      changePassword: '修改密码',
+      notifications: '通知设置',
+      privacy: '隐私设置',
+    },
+    auth: {
+      login: {
+        title: '登录',
+        subtitle: '登录您的LexiLoop账户',
+        email: '邮箱',
+        password: '密码',
+        rememberMe: '记住我',
+        forgotPassword: '忘记密码？',
+        loginButton: '登录',
+        noAccount: '还没有账户？',
+        signUp: '注册',
+      },
+      register: {
+        title: '注册',
+        subtitle: '创建您的LexiLoop账户',
+        name: '姓名',
+        email: '邮箱',
+        password: '密码',
+        confirmPassword: '确认密码',
+        agreeTerms: '我同意服务条款',
+        registerButton: '注册',
+        hasAccount: '已有账户？',
+        signIn: '登录',
+      },
     },
     language: {
       choose: '选择语言',
       current: '当前语言',
+    },
+    time: {
+      today: '今天',
+      yesterday: '昨天',
+      thisWeek: '本周',
+      thisMonth: '本月',
+      minutes: '分钟',
+      hours: '小时',
+      days: '天',
+      weeks: '周',
+      months: '月',
+    },
+    difficulty: {
+      beginner: '初级',
+      intermediate: '中级',
+      advanced: '高级',
     },
   },
   
