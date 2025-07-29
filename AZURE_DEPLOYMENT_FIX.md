@@ -75,7 +75,14 @@ NEXT_PUBLIC_SITE_URL=https://white-glacier-006c28d00.1.azurestaticapps.net
    - 默认应该是 "swa-db-connections"
 
 ## 修复优先级
-1. ✅ Next.js配置已修复 (output: 'export')
-2. ✅ 数据库配置文件已创建在多个位置
-3. ⏳ 需要在Azure Portal或GitHub中更新workflow配置
-4. ⏳ 需要添加环境变量到Azure Configuration
+1. ✅ Next.js配置已修复 (output: 'export', distDir: 'out')
+2. ✅ 删除有问题的环境变量文件
+3. ✅ 构建成功生成 frontend/out/ 文件夹
+4. ✅ 数据库配置文件已创建在多个位置
+5. ⏳ 需要在Azure Portal或GitHub中更新workflow配置
+6. ⏳ 需要添加环境变量到Azure Configuration
+
+## 构建验证
+- ✅ 本地构建成功
+- ✅ out 文件夹生成在正确位置 (frontend/out/)
+- ✅ 包含所有静态页面和资源文件

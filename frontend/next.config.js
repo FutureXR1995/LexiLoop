@@ -2,6 +2,7 @@
 const nextConfig = {
   // Static export for Azure Static Web Apps with database support
   output: 'export',
+  distDir: 'out',
   trailingSlash: true,
   
   // Image optimization disabled for static export
