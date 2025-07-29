@@ -1,0 +1,77 @@
+{
+  "$schema": "https://github.com/Azure/data-api-builder/releases/latest/download/dab.draft.schema.json",
+  "data-source": {
+    "database-type": "postgresql",
+    "connection-string": "@env('DATABASE_URL')",
+    "options": {
+      "set-session-context": false
+    }
+  },
+  "runtime": {
+    "rest": {
+      "enabled": true,
+      "path": "/rest"
+    },
+    "graphql": {
+      "enabled": true,
+      "path": "/graphql",
+      "allow-introspection": true
+    },
+    "host": {
+      "cors": {
+        "origins": ["*"],
+        "allow-credentials": false
+      },
+      "authentication": {
+        "provider": "StaticWebApps"
+      }
+    }
+  },
+  "entities": {
+    "User": {
+      "source": "users",
+      "permissions": [
+        {
+          "role": "anonymous",
+          "actions": ["create", "read", "update", "delete"]
+        }
+      ]
+    },
+    "VocabularyCollection": {
+      "source": "vocabulary_collections", 
+      "permissions": [
+        {
+          "role": "anonymous",
+          "actions": ["create", "read", "update", "delete"]
+        }
+      ]
+    },
+    "Word": {
+      "source": "words",
+      "permissions": [
+        {
+          "role": "anonymous", 
+          "actions": ["create", "read", "update", "delete"]
+        }
+      ]
+    },
+    "Story": {
+      "source": "stories",
+      "permissions": [
+        {
+          "role": "anonymous",
+          "actions": ["create", "read", "update", "delete"] 
+        }
+      ]
+    },
+    "LearningProgress": {
+      "source": "learning_progress",
+      "permissions": [
+        {
+          "role": "anonymous",
+          "actions": ["create", "read", "update", "delete"]
+        }
+      ]
+    }
+  }
+}

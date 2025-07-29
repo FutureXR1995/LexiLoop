@@ -1,7 +1,0 @@
-{
-  "connectionString": "${DATABASE_URL}",
-  "type": "postgresql",
-  "options": {
-    "ssl": true
-  }
-}
