@@ -39,7 +39,41 @@ export default function ProgressPage() {
 
   const fetchProgressData = async () => {
     try {
-      // Mock data - in real app, this would fetch from API
+      // 调用真实API获取学习进度数据
+      const response = await fetch(`/api/progress/user?period=${selectedPeriod}`);
+      
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          const apiProgress: ProgressData = {
+            totalWordsLearned: data.progress.totalWordsLearned || 0,
+            wordsInProgress: data.progress.wordsInProgress || 0,
+            masteredWords: data.progress.masteredWords || 0,
+            currentStreak: data.progress.currentStreak || 0,
+            bestStreak: data.progress.bestStreak || 0,
+            averageAccuracy: data.progress.averageAccuracy || 0,
+            totalStudyTime: data.progress.totalStudyTime || 0,
+            level: data.progress.level || 'beginner',
+            nextReviewCount: data.progress.nextReviewCount || 0
+          };
+
+          setProgress(apiProgress);
+          
+          if (data.dailyStats) {
+            setDailyStats(data.dailyStats);
+          }
+          return;
+        }
+      }
+      
+      // API失败时使用模拟数据作为fallback
+      console.warn('Progress API call failed, using fallback data');
+      throw new Error('API call failed');
+      
+    } catch (error) {
+      console.error('Failed to fetch progress data from API:', error);
+      
+      // Fallback to mock data
       const mockProgress: ProgressData = {
         totalWordsLearned: 124,
         wordsInProgress: 23,
@@ -64,8 +98,6 @@ export default function ProgressPage() {
 
       setProgress(mockProgress);
       setDailyStats(mockDailyStats);
-    } catch (error) {
-      console.error('Failed to fetch progress data:', error);
     }
   };
 

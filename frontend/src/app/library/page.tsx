@@ -63,11 +63,53 @@ const VocabularyLibraryPage: React.FC = () => {
   
   const t = useTranslations(currentLocale);
 
-  // 模拟数据加载
+  // 从API加载词汇集合数据
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // 模拟API调用
+        // 调用真实API获取词汇集合
+        const response = await fetch('/api/vocabulary/collections');
+        
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success && data.collections) {
+            const apiCollections: VocabularyCollection[] = data.collections.map((collection: any) => ({
+              id: collection.id,
+              name: collection.title,
+              description: collection.description,
+              category: collection.category,
+              difficulty: collection.level?.toLowerCase() || 'beginner',
+              words: collection.words || [],
+              isPublic: collection.isPublic,
+              createdBy: collection.createdBy || 'Unknown',
+              createdAt: new Date(collection.createdAt).toLocaleDateString(),
+              stats: {
+                totalWords: collection.wordCount || 0,
+                averageDifficulty: 3.0,
+                completionRate: Math.floor(Math.random() * 100) // 临时随机进度
+              }
+            }));
+            
+            setCollections(apiCollections);
+            setFilteredCollections(apiCollections);
+            
+            // Extract unique categories
+            const uniqueCategories = Array.from(new Set(apiCollections.map(c => c.category)));
+            setCategories(uniqueCategories);
+            
+            setLoading(false);
+            return;
+          }
+        }
+        
+        // API失败时使用模拟数据作为fallback
+        console.warn('API call failed, using fallback data');
+        throw new Error('API call failed');
+        
+      } catch (error) {
+        console.error('Failed to fetch collections from API:', error);
+        
+        // Fallback to mock data
         const mockCollections: VocabularyCollection[] = [
           {
             id: '1',
@@ -126,9 +168,6 @@ const VocabularyLibraryPage: React.FC = () => {
         const uniqueCategories = Array.from(new Set(mockCollections.map(c => c.category)));
         setCategories(uniqueCategories);
         
-        setLoading(false);
-      } catch (error) {
-        console.error('Failed to fetch collections:', error);
         setLoading(false);
       }
     };

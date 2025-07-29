@@ -62,29 +62,73 @@ export default function LearnPage() {
     setError(null);
 
     try {
-      // Mock API call - in real implementation, this would call the backend
-      await new Promise(resolve => setTimeout(resolve, 2000)); // Simulate API delay
-      
-      // Mock response
-      const mockStory: GeneratedStory = {
-        content: `Once upon a time, there was a young student who loved to embark on exciting adventures. The world seemed mysterious and full of secrets waiting to be discovered. Every day, she would explore new places and discover fascinating things about the world around her. This adventure taught her that learning new words opens up incredible opportunities to explore and understand the fascinating world we live in.`,
-        wordCount: 65,
-        qualityScore: 0.85,
-        vocabularyUsed: selected.map(w => w.word)
-      };
+      // Call real AI story generation API
+      const response = await fetch('/api/ai/generate-story', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          vocabularyWords: selected.map(w => w.word),
+          difficulty: difficulty,
+          storyType: storyType,
+          wordCount: 100
+        })
+      });
 
-      setGeneratedStory(mockStory);
+      if (!response.ok) {
+        throw new Error(`API Error: ${response.status} ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      
+      if (data.success && data.story) {
+        const generatedStory: GeneratedStory = {
+          content: data.story.content,
+          wordCount: data.story.wordCount || data.story.content.split(' ').length,
+          qualityScore: data.story.qualityScore || 0.8,
+          vocabularyUsed: selected.map(w => w.word)
+        };
+        setGeneratedStory(generatedStory);
+      } else {
+        throw new Error(data.error || 'Failed to generate story');
+      }
     } catch (err) {
-      setError('Failed to generate story. Please try again.');
+      console.error('Story generation error:', err);
+      setError(`Failed to generate story: ${err}`);
     } finally {
       setIsGenerating(false);
     }
   };
 
-  // Initialize selected words on first render
-  useState(() => {
-    setSelectedWords(sampleWords);
-  });
+  // Load vocabulary words from API
+  useEffect(() => {
+    const loadVocabulary = async () => {
+      try {
+        const response = await fetch('/api/vocabulary/words?limit=20&difficulty=' + difficulty);
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success && data.words) {
+            const apiWords: VocabularyWord[] = data.words.map((word: any) => ({
+              id: word.id,
+              word: word.word,
+              definition: word.definition,
+              selected: false
+            }));
+            setSelectedWords(apiWords);
+            return;
+          }
+        }
+      } catch (error) {
+        console.error('Failed to load vocabulary from API:', error);
+      }
+      
+      // Fallback to sample words if API fails
+      setSelectedWords(sampleWords);
+    };
+
+    loadVocabulary();
+  }, [difficulty]);
 
   return (
     <PageLayout>
