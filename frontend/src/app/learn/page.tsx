@@ -63,7 +63,7 @@ export default function LearnPage() {
 
     try {
       // Call real AI story generation API
-      const response = await fetch('/api/ai/generate-story', {
+      const response = await fetch('/api/ai-generate-story', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
