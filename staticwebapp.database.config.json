@@ -1,0 +1,9 @@
+{
+  "database": {
+    "connectionString": "$DATABASE_URL",
+    "type": "postgresql"
+  },
+  "data": {
+    "enabled": true
+  }
+}
