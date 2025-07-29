@@ -69,10 +69,10 @@ export default function LearnPage() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          vocabularyWords: selected.map(w => w.word),
-          difficulty: difficulty,
-          storyType: storyType,
-          wordCount: 100
+          words: selected.map(w => w.word),
+          level: difficulty,
+          genre: storyType,
+          length: 100
         })
       });
 
@@ -84,10 +84,10 @@ export default function LearnPage() {
       
       if (data.success && data.story) {
         const generatedStory: GeneratedStory = {
-          content: data.story.content,
-          wordCount: data.story.wordCount || data.story.content.split(' ').length,
-          qualityScore: data.story.qualityScore || 0.8,
-          vocabularyUsed: selected.map(w => w.word)
+          content: data.story,
+          wordCount: data.metadata?.length || data.story.split(' ').length,
+          qualityScore: 0.8,
+          vocabularyUsed: data.metadata?.wordsUsed || selected.map(w => w.word)
         };
         setGeneratedStory(generatedStory);
       } else {
