@@ -1,0 +1,52 @@
+{
+  "$schema": "https://github.com/Azure/data-api-builder/releases/latest/download/dab.draft.schema.json",
+  "data-source": {
+    "database-type": "postgresql",
+    "connection-string": "@env('DATABASE_URL')"
+  },
+  "runtime": {
+    "rest": {
+      "enabled": true,
+      "path": "/rest"
+    },
+    "graphql": {
+      "enabled": true,
+      "path": "/graphql"
+    },
+    "host": {
+      "cors": {
+        "origins": ["*"],
+        "allow-credentials": false
+      }
+    }
+  },
+  "entities": {
+    "User": {
+      "source": "users",
+      "permissions": [
+        {
+          "role": "anonymous",
+          "actions": ["*"]
+        }
+      ]
+    },
+    "VocabularyCollection": {
+      "source": "vocabulary_collections", 
+      "permissions": [
+        {
+          "role": "anonymous",
+          "actions": ["*"]
+        }
+      ]
+    },
+    "Word": {
+      "source": "words",
+      "permissions": [
+        {
+          "role": "anonymous", 
+          "actions": ["*"]
+        }
+      ]
+    }
+  }
+}

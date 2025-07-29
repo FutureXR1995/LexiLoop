@@ -55,7 +55,27 @@ AZURE_SPEECH_REGION=eastus
 NEXT_PUBLIC_SITE_URL=https://white-glacier-006c28d00.1.azurestaticapps.net
 ```
 
+## 数据库配置文件位置
+为确保Azure能找到数据库配置，已在多个位置创建配置文件：
+- ✅ `/swa-db-connections/staticwebapp.database.config.json` (推荐位置)
+- ✅ `/staticwebapp.database.config.json` (根目录备用)
+- ✅ `/database-connections/staticwebapp.database.config.json` (替代位置)
+
+## 如果仍显示"缺少数据库连接配置文件"
+1. **在Azure Portal检查部署日志**
+   - 确认文件是否被正确部署
+   - 查看是否有配置错误
+
+2. **手动触发重新部署**
+   - 在GitHub仓库中进行一个小的更改并推送
+   - 或在Azure Portal中点击"重新部署"
+
+3. **检查工作流配置**
+   - 确保 `data_api_location` 参数设置正确
+   - 默认应该是 "swa-db-connections"
+
 ## 修复优先级
 1. ✅ Next.js配置已修复 (output: 'export')
-2. ⏳ 需要在Azure Portal或GitHub中更新workflow配置
-3. ⏳ 需要添加环境变量到Azure Configuration
+2. ✅ 数据库配置文件已创建在多个位置
+3. ⏳ 需要在Azure Portal或GitHub中更新workflow配置
+4. ⏳ 需要添加环境变量到Azure Configuration
