@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Static export for Azure Static Web Apps
-  output: 'export',
+  // Enable server-side features for Azure Static Web Apps with database
+  // output: 'export', // Disabled to allow database connections
   trailingSlash: true,
   
   // Image optimization disabled for static export
