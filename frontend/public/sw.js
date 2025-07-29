@@ -85,6 +85,11 @@ self.addEventListener('fetch', (event) => {
 
   const { request } = event;
   const url = new URL(request.url);
+  
+  // Skip unsupported schemes (chrome-extension, moz-extension, etc.)
+  if (!url.protocol.startsWith('http')) {
+    return;
+  }
 
   // Handle navigation requests (HTML pages)
   if (request.mode === 'navigate') {
@@ -114,11 +119,13 @@ self.addEventListener('fetch', (event) => {
   event.respondWith(
     fetch(request)
       .then((response) => {
-        // Cache successful responses
-        if (response.ok) {
+        // Cache successful responses only for http/https schemes
+        if (response.ok && (url.protocol === 'http:' || url.protocol === 'https:')) {
           const responseClone = response.clone();
           caches.open(CACHE_NAME).then((cache) => {
-            cache.put(request, responseClone);
+            cache.put(request, responseClone).catch((error) => {
+              console.warn('[SW] Failed to cache request:', request.url, error);
+            });
           });
         }
         return response;
