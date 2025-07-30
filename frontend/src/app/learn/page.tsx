@@ -50,6 +50,48 @@ export default function LearnPage() {
     );
   };
 
+  const handleListenToAudio = async (text: string) => {
+    try {
+      // Clean text for speech synthesis (remove markdown formatting)
+      const cleanText = text
+        .replace(/[#*]/g, '') // Remove markdown symbols
+        .replace(/\n\n/g, '. ') // Replace double newlines with periods
+        .replace(/\n/g, ' ') // Replace single newlines with spaces
+        .trim();
+
+      const response = await fetch('/api/speech-synthesize', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          text: cleanText,
+          voice: 'zh-CN-XiaoxiaoNeural',
+          speed: '1.0'
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`Speech API Error: ${response.status} ${response.statusText}`);
+      }
+
+      // Create audio blob and play
+      const audioBlob = await response.blob();
+      const audioUrl = URL.createObjectURL(audioBlob);
+      const audio = new Audio(audioUrl);
+      
+      audio.onended = () => {
+        URL.revokeObjectURL(audioUrl);
+      };
+      
+      await audio.play();
+      
+    } catch (err) {
+      console.error('Speech synthesis error:', err);
+      setError(`Failed to play audio: ${err}`);
+    }
+  };
+
   const handleGenerateStory = async () => {
     const selected = selectedWords.filter(word => word.selected);
     
@@ -299,7 +341,10 @@ export default function LearnPage() {
                   >
                     📖 Immersive Reading
                   </Link>
-                  <button className="flex-1 bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700">
+                  <button 
+                    onClick={() => handleListenToAudio(generatedStory.content)}
+                    className="flex-1 bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700"
+                  >
                     🎧 Listen to Audio
                   </button>
                   <Link
