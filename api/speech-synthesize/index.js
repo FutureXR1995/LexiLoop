@@ -93,31 +93,18 @@ module.exports = async function (context, req) {
         } catch (speechError) {
             context.log.error('Azure Speech Services error:', speechError);
             
-            // Fallback to dummy audio if Speech Services fails
-            const dummyWavHeader = Buffer.from([
-                0x52, 0x49, 0x46, 0x46, // "RIFF"
-                0x24, 0x00, 0x00, 0x00, // File size
-                0x57, 0x41, 0x56, 0x45, // "WAVE"
-                0x66, 0x6D, 0x74, 0x20, // "fmt "
-                0x10, 0x00, 0x00, 0x00, // Format chunk size
-                0x01, 0x00, 0x01, 0x00, // Audio format, channels
-                0x44, 0xAC, 0x00, 0x00, // Sample rate
-                0x88, 0x58, 0x01, 0x00, // Byte rate
-                0x02, 0x00, 0x10, 0x00, // Block align, bits per sample
-                0x64, 0x61, 0x74, 0x61, // "data"
-                0x00, 0x00, 0x00, 0x00  // Data size
-            ]);
-
             context.res = {
-                status: 200,
+                status: 500,
                 headers: { 
-                    'Content-Type': 'audio/wav',
-                    'Content-Disposition': 'attachment; filename="speech_fallback.wav"',
-                    'Access-Control-Allow-Origin': '*',
-                    'X-Fallback-Reason': `Azure Speech Services failed: ${speechError.message}`
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*'
                 },
-                body: dummyWavHeader
+                body: JSON.stringify({ 
+                    error: 'Azure Speech Services call failed',
+                    details: speechError.message
+                })
             };
+            return;
         }
     } catch (error) {
         context.log.error('Speech synthesis error:', error);

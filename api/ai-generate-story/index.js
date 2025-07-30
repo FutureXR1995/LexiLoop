@@ -89,19 +89,19 @@ Vocabulary words to include: ${words.join(', ')}`;
         } catch (claudeError) {
             context.log.error('Claude API error:', claudeError);
             
-            // Fallback to template story if Claude API fails
-            story = `# ${genre ? genre.charAt(0).toUpperCase() + genre.slice(1) : 'Adventure'} Story
-
-Once upon a time, there was a young explorer who discovered the magic of learning. 
-
-In their journey, they encountered many wonderful things: an **${words[0]}** that glowed with wisdom, the power of **${words[1] || 'friendship'}** that connected hearts across languages, and thrilling **${words[2] || 'adventures'}** that taught valuable lessons.
-
-The explorer learned that with patience and curiosity, any language could be mastered. Each word was like a key that unlocked new worlds of understanding.
-
-**Words featured in this story:**
-${words.map(word => `• ${word.charAt(0).toUpperCase() + word.slice(1)}`).join('\n')}
-
-*Note: This is a fallback story. Claude API integration failed: ${claudeError.message}*`;
+            context.res = {
+                status: 500,
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*'
+                },
+                body: JSON.stringify({ 
+                    error: 'Claude API call failed',
+                    details: claudeError.message,
+                    success: false
+                })
+            };
+            return;
         }
 
         context.res = {
