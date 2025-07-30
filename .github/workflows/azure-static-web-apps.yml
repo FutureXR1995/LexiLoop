@@ -1,69 +1,75 @@
 name: Azure Static Web Apps CI/CD
 
-  on:
-    push:
-      branches:
-        - main
-    pull_request:
-      types: [opened, synchronize, reopened, closed]
-      branches:
-        - main
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [opened, synchronize, reopened, closed]
+    branches:
+      - main
 
-  jobs:
-    build_and_deploy_job:
-      if: github.event_name == 'push' || (github.event_name == 'pull_request' &&
-  github.event.action != 'closed')
-      runs-on: ubuntu-latest
-      name: Build and Deploy Job
-      steps:
-        - uses: actions/checkout@v4
-          with:
-            submodules: true
-            lfs: false
+jobs:
+  build_and_deploy_job:
+    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
+    runs-on: ubuntu-latest
+    name: Build and Deploy Job
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+          lfs: false
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: './frontend/package-lock.json'
+      
+      - name: Install and Build Frontend
+        run: |
+          cd frontend
+          npm ci
+          npm run build
+      
+      - name: Build And Deploy
+        id: builddeploy
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_AGREEABLE_MUSHROOM_0AB8A6A00 }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          action: "upload"
+          app_location: "/frontend" 
+          api_location: "/api"
+          data_api_location: "/swa-db-connections"
+          output_location: "out"
+        env:
+          # Database Configuration
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          
+          # Authentication Configuration  
+          NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
+          NEXTAUTH_URL: ${{ secrets.NEXTAUTH_URL }}
+          
+          # AI Services Configuration
+          CLAUDE_API_KEY: ${{ secrets.CLAUDE_API_KEY }}
+          
+          # Azure Speech Services Configuration
+          AZURE_SPEECH_KEY: ${{ secrets.AZURE_SPEECH_KEY }}
+          AZURE_SPEECH_REGION: ${{ secrets.AZURE_SPEECH_REGION }}
+          
+          # Application Configuration
+          NODE_ENV: "production"
 
-        - name: Setup Node.js
-          uses: actions/setup-node@v4
-          with:
-            node-version: '18'
-            cache: 'npm'
-            cache-dependency-path: './frontend/package-lock.json'
-
-        - name: Install and Build Frontend
-          run: |
-            cd frontend
-            npm ci
-            npm run build
-
-        - name: Build And Deploy
-          id: builddeploy
-          uses: Azure/static-web-apps-deploy@v1
-          with:
-            azure_static_web_apps_api_token: ${{
-  secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_AGREEABLE_MUSHROOM_0AB8A6A00 }}
-            repo_token: ${{ secrets.GITHUB_TOKEN }}
-            action: "upload"
-            app_location: "/frontend"
-            api_location: "/api"
-            data_api_location: "/swa-db-connections"
-            output_location: "out"
-          env:
-            DATABASE_URL: ${{ secrets.DATABASE_URL }}
-            NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
-            NEXTAUTH_URL: ${{ secrets.NEXTAUTH_URL }}
-            CLAUDE_API_KEY: ${{ secrets.CLAUDE_API_KEY }}
-            AZURE_SPEECH_KEY: ${{ secrets.AZURE_SPEECH_KEY }}
-            AZURE_SPEECH_REGION: ${{ secrets.AZURE_SPEECH_REGION }}
-            NODE_ENV: "production"
-
-    close_pull_request_job:
-      if: github.event_name == 'pull_request' && github.event.action == 'closed'
-      runs-on: ubuntu-latest
-      name: Close Pull Request Job
-      steps:
-        - name: Close Pull Request
-          id: closepullrequest
-          uses: Azure/static-web-apps-deploy@v1
-          with:
-            azure_static_web_apps_api_token: ${{
-  secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_AGREEABLE_MUSHROOM_0AB8A6A00 }}
-            action: "close"
+  close_pull_request_job:
+    if: github.event_name == 'pull_request' && github.event.action == 'closed'
+    runs-on: ubuntu-latest
+    name: Close Pull Request Job
+    steps:
+      - name: Close Pull Request
+        id: closepullrequest
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_AGREEABLE_MUSHROOM_0AB8A6A00 }}
+          action: "close"
