@@ -27,13 +27,13 @@ AZURE_SPEECH_REGION=[Your Azure region, e.g. eastus, westus2]
 
 ### 🏭 Azure Static Web Apps Token
 ```
-AZURE_STATIC_WEB_APPS_API_TOKEN_AGREEABLE_MUSHROOM_0AB8A6A00=[Get from Azure Portal]
+AZURE_STATIC_WEB_APPS_API_TOKEN_WHITE_GLACIER_006C28D00=[Get from Azure Portal]
 ```
 
 ## How to Get Azure Static Web Apps Deployment Token
 
 1. **Login to Azure Portal**: https://portal.azure.com/
-2. **Navigate to your Static Web App**: Search for "agreeable-mushroom-0ab8a6a00"
+2. **Navigate to your Static Web App**: Search for "white-glacier-006c28d00"
 3. **Go to Overview page**
 4. **Click "Manage deployment token"**
 5. **Copy the deployment token**
