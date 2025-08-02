@@ -31,6 +31,12 @@ module.exports = async function (context, req) {
         // Real Claude API integration
         const claudeApiKey = process.env.CLAUDE_API_KEY;
         
+        // Debug: Log environment variable status
+        context.log('Environment variables check:');
+        context.log('CLAUDE_API_KEY exists:', !!claudeApiKey);
+        context.log('CLAUDE_API_KEY length:', claudeApiKey ? claudeApiKey.length : 0);
+        context.log('NODE_ENV:', process.env.NODE_ENV);
+        
         if (!claudeApiKey) {
             context.res = {
                 status: 500,
@@ -40,7 +46,12 @@ module.exports = async function (context, req) {
                 },
                 body: JSON.stringify({ 
                     error: 'Claude API key not configured',
-                    message: 'CLAUDE_API_KEY environment variable is required'
+                    message: 'CLAUDE_API_KEY environment variable is required',
+                    debug: {
+                        claudeKeyExists: !!claudeApiKey,
+                        nodeEnv: process.env.NODE_ENV,
+                        availableKeys: Object.keys(process.env).filter(k => k.includes('CLAUDE') || k.includes('API'))
+                    }
                 })
             };
             return;
