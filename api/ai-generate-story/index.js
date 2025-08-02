@@ -37,6 +37,26 @@ module.exports = async function (context, req) {
         context.log('CLAUDE_API_KEY length:', claudeApiKey ? claudeApiKey.length : 0);
         context.log('NODE_ENV:', process.env.NODE_ENV);
         
+        // TEMPORARY DEBUG: Force return environment status instead of calling Claude
+        context.res = {
+            status: 200,
+            headers: { 
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*'
+            },
+            body: JSON.stringify({
+                debug: true,
+                message: 'Environment variable debug info',
+                claudeKeyExists: !!claudeApiKey,
+                claudeKeyLength: claudeApiKey ? claudeApiKey.length : 0,
+                claudeKeyPrefix: claudeApiKey ? claudeApiKey.substring(0, 10) + '...' : 'NOT_SET',
+                nodeEnv: process.env.NODE_ENV,
+                allEnvKeys: Object.keys(process.env).filter(k => k.includes('CLAUDE') || k.includes('AZURE') || k.includes('DATABASE')),
+                timestamp: new Date().toISOString()
+            })
+        };
+        return;
+        
         if (!claudeApiKey) {
             context.res = {
                 status: 500,
